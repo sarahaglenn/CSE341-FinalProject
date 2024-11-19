@@ -16,10 +16,52 @@
   "components": {
     "securitySchemes": {},
     "schemas": {
-      "User": {},
-      "Book": {},
-      "Loan": {},
-      "Reservation": {}
+      "User": {
+        "type": "object",
+        "required": ["UserID", "FirstName", "LastName", "UserType", "MailingAddress"],
+        "properties": {
+            "UserID": {"type": "number", "example": 10},
+            "FirstName": { "type": "string", "example": "Jane"},
+            "LastName": {"type": "string", "example": "Doe"},
+            "UserType": {"type": "string", "example": "patron"},
+            "MailingAddress": {"type": "string", "example": "345 East Main St."}
+        }
+      },
+      "Book": {
+        "type": "object",
+        "required": ["BookID", "Title", "Author", "ISBN", "PublicationYear", "Availability", "Publisher"],
+        "properties": {
+            "BookID": {"type": "number", "example": 10},
+            "Title": {"type": "string", "example": "Fahrenheit 451"},
+            "Author": {"type": "string", "example": "Ray Bradbury"},
+            "ISBN": {"type": "string", "example": "9780006546061"},
+            "Genre": {"type": "string", "example": "Science Fiction"},
+            "PublicationYear": {"type": "number", "example": 1993},
+            "Availability": {"type": "boolean", "example": "False"},
+            "Publisher": {"type": "string", "example": "Harper Collins"}
+        }
+      },
+      "Loan": {
+        "type": "object",
+        "required": ["LoanID", "BookID", "UserID", "DateOut", "DueDate"],
+        "properties": {
+            "LoanID": {"type": "number", "example": 10},
+            "BookID": {"type": "number", "example": 1},
+            "UserID": {"type": "number", "example": 1},
+            "DateOut": {"type": "string", "example": "2024-11-04"},
+            "DueDate": {"type": "string", "example": "2024-11-25"}
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "required": ["ReservationID", "UserID", "BookID", "ReservationDate"],
+        "properties": {
+            "ReservationID": {"type": "number", "example": 10},
+            "UserID": {"type": "number", "example": 1},
+            "BookID": {"type": "number", "example": 1},
+            "ReservationDate": {"type": "string", "example": "2024-11-25"}
+        }
+      }
     }
   },
   "paths": {
