@@ -8,6 +8,6 @@ router.get('/', reservationsController.getReservations);
 
 router.get('/:reservationId', reservationsController.getReservationById);
 
-router.get('/:userId', reservationsController.getReservationByUserId);
+// router.get('/:userId', reservationsController.getReservationByUserId); // implement with query params instead
 
 module.exports = router;

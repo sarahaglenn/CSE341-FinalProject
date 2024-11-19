@@ -20,7 +20,7 @@ const getUserById = async (req, res) => {
   // }
   const userId = req.params.userId;
   try {
-    const user = await User.find({ userId: userId });
+    const user = await User.find({ UserId: userId });
     if (user) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(user);

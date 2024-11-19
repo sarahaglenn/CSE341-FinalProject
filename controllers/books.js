@@ -30,7 +30,7 @@ const getBookById = async (req, res) => {
   //   }
   const bookId = req.params.bookId;
   try {
-    const book = await Book.find({ bookId: bookId });
+    const book = await Book.find({ BookId: bookId });
     if (book) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(book);

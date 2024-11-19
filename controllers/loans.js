@@ -12,7 +12,7 @@ const getLoans = async (req, res) => {
         filter.userId = UserId;
   }
   try {
-    const loans = await Loan.find();
+    const loans = await Loan.find(filter);
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(loans);
   } catch (error) {
@@ -24,7 +24,7 @@ const getLoanById = async (req, res) => {
 
   const loanId = req.params.loanId;
   try {
-    const loan = await Loan.find({ loanId: loanId });
+    const loan = await Loan.find({ LoanId: loanId });
     if (loan) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(loan);
