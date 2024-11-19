@@ -14,22 +14,12 @@
     }
   ],
   "components": {
-    "securitySchemes": {
-
-    },
+    "securitySchemes": {},
     "schemas": {
-        "User": {
-
-        },
-        "Book": {
-
-        },
-        "Loan": {
-
-        },
-        "Reservation": {
-
-        }
+      "User": {},
+      "Book": {},
+      "Loan": {},
+      "Reservation": {}
     }
   },
   "paths": {
@@ -120,59 +110,59 @@
       }
     },
     "/users/login": {
-        "get": {
-            "summary": "User login",
-            "description": "Authenticates a user based on query parameters and returns a session token.",
-            "parameters": [
-            {
-                "name": "email",
-                "in": "query",
-                "required": true,
+      "get": {
+        "summary": "User login",
+        "description": "Authenticates a user based on query parameters and returns a session token.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "user@example.com"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password",
+              "example": "password123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
                 "schema": {
-                "type": "string",
-                "example": "user@example.com"
-                }
-            },
-            {
-                "name": "password",
-                "in": "query",
-                "required": true,
-                "schema": {
-                "type": "string",
-                "format": "password",
-                "example": "password123"
-                }
-            }
-            ],
-            "responses": {
-            "200": {
-                "description": "Login successful",
-                "content": {
-                "application/json": {
-                    "schema": {
-                    "type": "object",
-                    "properties": {
-                        "token": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                        },
-                        "user": {
-                        "$ref": "#/components/schemas/User"
-                        }
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
                     }
-                    }
+                  }
                 }
-                }
-            },
-            "401": {
-                "description": "Unauthorized - Invalid email or password"
-            },
-            "500": {
-                "description": "Internal Server Error"
+              }
             }
-            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid email or password"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
-      },
+      }
+    },
     "users/logout": {
       "get": {
         "summary": "User logout",
@@ -191,33 +181,33 @@
       }
     },
     "/books": {
-        "get": {
-          "description": "Retrieve all books with optional filtering for availability.",
-          "parameters": [
-            {
-              "name": "availability",
-              "in": "query",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "enum": [true, false]
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK - List of books matching the filter.",
-              "content": {
-                "application/json": {
-                  "schema": { "$ref": "#/components/schemas/Book" }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal Server Error"
+      "get": {
+        "description": "Retrieve all books with optional filtering for availability.",
+        "parameters": [
+          {
+            "name": "availability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [true, false]
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - List of books matching the filter.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
+      }
     },
     "/books/{bookId}": {
       "get": {
@@ -262,10 +252,10 @@
             "in": "path",
             "required": true,
             "schema": {
-            "type": "string",
-            "example": "9783161484100"
+              "type": "string",
+              "example": "9783161484100"
             }
-        }
+          }
         ],
         "responses": {
           "200": {
