@@ -2,14 +2,14 @@ const Loan = require('../models/loan-model');
 const { ObjectId } = require('mongodb'); // not currently using this.
 
 const getLoans = async (req, res) => {
-    const { BookId, UserId } = req.query;
+  const { BookId, UserId } = req.query;
 
   const filter = {};
   if (BookId) {
     filter.bookId = BookId;
   }
-    if (UserId) {
-        filter.userId = UserId;
+  if (UserId) {
+    filter.userId = UserId;
   }
   try {
     const loans = await Loan.find(filter);
@@ -21,7 +21,6 @@ const getLoans = async (req, res) => {
 };
 
 const getLoanById = async (req, res) => {
-
   const loanId = req.params.loanId;
   try {
     const loan = await Loan.find({ LoanId: loanId });
@@ -40,8 +39,8 @@ const getLoanById = async (req, res) => {
 // const getLoanByBookId = async (req, res) => { };
 
 module.exports = {
-    getLoans,
-    getLoanById,
-    // getLoanByUserId,
-    // getLoanByBookId
+  getLoans,
+  getLoanById
+  // getLoanByUserId,
+  // getLoanByBookId
 };

@@ -18,7 +18,6 @@ const getReservations = async (req, res) => {
 };
 
 const getReservationById = async (req, res) => {
-
   const reservationId = req.params.reservationId;
   try {
     const reservation = await Reservation.find({ ReservationId: reservationId });
@@ -34,6 +33,6 @@ const getReservationById = async (req, res) => {
 };
 
 module.exports = {
-    getReservations,
-    getReservationById
+  getReservations,
+  getReservationById
 };

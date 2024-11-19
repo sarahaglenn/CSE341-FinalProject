@@ -8,8 +8,8 @@ const getBooks = async (req, res) => {
   if (availability) {
     filter.availability = availability.toLowerCase() === 'true';
   }
-    if (ISBN) {
-        filter.isbn = ISBN;
+  if (ISBN) {
+    filter.isbn = ISBN;
   }
 
   try {
