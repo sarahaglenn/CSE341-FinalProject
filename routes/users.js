@@ -8,7 +8,7 @@ router.get('/', usersController.getUsers);
 
 router.get('/:userId', usersController.getUserById);
 
-router.get('/:userType', usersController.getUserByType);
+router.get('/type/:userType', usersController.getUserByType);
 
 router.get('/login', usersController.userLogin);
 
