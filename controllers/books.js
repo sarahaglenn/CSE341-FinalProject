@@ -30,10 +30,10 @@ const getBookById = async (req, res) => {
   //   }
   const bookId = req.params.bookId;
   try {
-    const book = await Book.find({ BookID: bookId });
-    if (book.length > 0) {
+    const book = await Book.findOne({ BookID: bookId });
+    if (book) {
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(book[0]);
+      res.status(200).json(book);
     } else {
       res.status(404).json({ error: 'No book exists with that id' });
     }
