@@ -1,15 +1,15 @@
 const Book = require('../models/book-model');
-const { ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb'); //not currently using this
 
 const getBooks = async (req, res) => {
   const { availability, ISBN } = req.query;
 
   const filter = {};
   if (availability) {
-    filter.availability = availability.toLowerCase() === 'true';
+    filter.Availability = availability.toLowerCase() === 'true';
   }
   if (ISBN) {
-    filter.isbn = ISBN;
+    filter.ISBN = ISBN;
   }
 
   try {
@@ -30,10 +30,10 @@ const getBookById = async (req, res) => {
   //   }
   const bookId = req.params.bookId;
   try {
-    const book = await Book.find({ BookId: bookId });
-    if (book) {
+    const book = await Book.find({ BookID: bookId });
+    if (book.length > 0) {
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).json(book);
+      res.status(200).json(book[0]);
     } else {
       res.status(404).json({ error: 'No book exists with that id' });
     }

@@ -1,5 +1,5 @@
 const User = require('../models/user-model');
-const { ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb');
 
 const getUsers = async (req, res) => {
   try {
@@ -50,13 +50,13 @@ const getUserByType = async (req, res) => {
   }
 };
 
-const userLogin = async (req, res) => {};
-const userLogout = async (req, res) => {};
+// const userLogin = async (req, res) => {}; // not yet implemented. Should these routes be in auth folder instead?
+// const userLogout = async (req, res) => {};
 
 module.exports = {
   getUsers,
   getUserById,
-  getUserByType,
-  userLogin,
-  userLogout
+  getUserByType
+  // userLogin, // not yet implemented
+  // userLogout
 };
