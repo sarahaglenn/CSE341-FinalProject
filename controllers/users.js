@@ -14,10 +14,10 @@ const getUsers = async (req, res) => {
 const getUserById = async (req, res) => {
   // I initially wrote this for search by _id rather than the manually entered UserID
   // I either need to update swagger.json, or rewrite this validation in another way.
-  
+
   // if (!ObjectId.isValid(req.params.userId)) {
   //   return res.status(400).json({ error: 'Must use a valid user id to find a user.' });
-  // } 
+  // }
   const userId = req.params.userId;
   try {
     const user = await User.find({ userId: userId });

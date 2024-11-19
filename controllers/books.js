@@ -5,9 +5,9 @@ const getBooks = async (req, res) => {
   const { availability } = req.query;
 
   const filter = {};
-    if (availability) {
-        filter.availability = availability.toLowerCase() === 'true';
-    }
+  if (availability) {
+    filter.availability = availability.toLowerCase() === 'true';
+  }
 
   try {
     const books = await Book.find(filter);
@@ -19,15 +19,15 @@ const getBooks = async (req, res) => {
 };
 
 const getBookById = async (req, res) => {
-    // It doesn't look like we plan to retrieve books by their generated id, so this can be 
-    // removed along with the response in swagger.json
+  // It doesn't look like we plan to retrieve books by their generated id, so this can be
+  // removed along with the response in swagger.json
 
-//   if (!ObjectId.isValid(req.params.id)) {
-//     return res.status(400).json({ error: 'Must use a valid product id to find a product.' });
-//   }
+  //   if (!ObjectId.isValid(req.params.id)) {
+  //     return res.status(400).json({ error: 'Must use a valid product id to find a product.' });
+  //   }
   const bookId = req.params.bookId;
   try {
-      const book = await book.find({ bookId: bookId });
+    const book = await book.find({ bookId: bookId });
     if (book) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(book);
@@ -40,9 +40,9 @@ const getBookById = async (req, res) => {
 };
 
 const getBookByIsbn = async (req, res) => {
-    const isbn = req.params.isbn;
+  const isbn = req.params.isbn;
   try {
-      const book = await book.find({ ISBN: isbn });
+    const book = await book.find({ ISBN: isbn });
     if (book) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(book);
@@ -55,7 +55,7 @@ const getBookByIsbn = async (req, res) => {
 };
 
 module.exports = {
-    getBooks,
-    getBookById,
-    getBookByIsbn
+  getBooks,
+  getBookById,
+  getBookByIsbn
 };
