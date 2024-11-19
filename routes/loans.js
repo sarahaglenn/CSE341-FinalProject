@@ -8,8 +8,8 @@ router.get('/', loansController.getLoans);
 
 router.get('/:loanId', loansController.getLoanById);
 
-router.get('/:userId', loansController.getLoanByUserId);
+// router.get('/:userId', loansController.getLoanByUserId); // Trying with query params instead
 
-router.get('/:bookId', loansController.getLoanByBookId);
+// router.get('/:bookId', loansController.getLoanByBookId); // Trying with query params instead
 
 module.exports = router;
