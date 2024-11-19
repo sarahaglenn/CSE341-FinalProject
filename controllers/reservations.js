@@ -1,5 +1,5 @@
 const Reservation = require('../models/reservation-model');
-const { ObjectId } = require('mongodb'); // not currently using this.
+// const { ObjectId } = require('mongodb'); // not currently using this.
 
 const getReservations = async (req, res) => {
   const { UserId } = req.query;
