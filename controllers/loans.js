@@ -16,7 +16,7 @@ const getLoans = async (req, res) => {
     if (loans > 0) {
       res.status(200).json(loans);
     } else {
-      return res.status(404).json({ error: 'No loans exist with those parameters.' })
+      return res.status(404).json({ error: 'No loans exist with those parameters.' });
     }
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving loans', detail: error.message });

@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 (async () => {
   try {
     await connectToDb();
-      console.log('Database connection established');
+    console.log('Database connection established');
 
     await connectToMongoose();
     console.log('Connected to database via Mongoose');

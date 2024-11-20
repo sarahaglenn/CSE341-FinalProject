@@ -4,7 +4,7 @@ const User = require('../models/user-model');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.setHeader('Content-Type', 'application/json'); 
+    res.setHeader('Content-Type', 'application/json');
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving users', detail: error.message });
@@ -33,8 +33,9 @@ const getUserById = async (req, res) => {
 };
 
 const getUserByType = async (req, res) => {
-
-  if (!(req.params.userType.toLowerCase() == 'patron' || req.params.userType.toLowerCase() == 'staff')) {
+  if (
+    !(req.params.userType.toLowerCase() == 'patron' || req.params.userType.toLowerCase() == 'staff')
+  ) {
     return res.status(400).json({ error: 'Must use a valid user type to find a user.' });
   }
   const userType = req.params.userType.toLowerCase();
