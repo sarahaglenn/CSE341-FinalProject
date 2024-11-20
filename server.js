@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const connectToDb = require('./db/connect');
+const connectToMongoose = require('./db/mongooseConnect');
 
 const app = express();
 
@@ -16,7 +17,10 @@ app.get('/', (req, res) => {
 (async () => {
   try {
     await connectToDb();
-    console.log('Database connection established');
+      console.log('Database connection established');
+
+    await connectToMongoose();
+    console.log('Connected to database via Mongoose');
 
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
@@ -28,7 +32,7 @@ app.get('/', (req, res) => {
 })();
 
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./autoSwagger.json');
+const swaggerDocument = require('./swagger.json');
 
 app.use('/', require('./routes'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
