@@ -26,3 +26,13 @@ app.get('/', (req, res) => {
         console.error('Failed to start server:', err);
     }
 })();
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./autoSwagger.json');
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json()).use('/', require('./routes'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+

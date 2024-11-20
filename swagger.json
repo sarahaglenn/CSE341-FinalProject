@@ -14,28 +14,68 @@
     }
   ],
   "components": {
-    "securitySchemes": {
-
-    },
+    "securitySchemes": {},
     "schemas": {
-        "User": {
-
-        },
-        "Book": {
-
-        },
-        "Loan": {
-
-        },
-        "Reservation": {
-
+      "User": {
+        "type": "object",
+        "required": ["UserID", "FirstName", "LastName", "UserType", "MailingAddress"],
+        "properties": {
+          "UserID": { "type": "number", "example": 10 },
+          "FirstName": { "type": "string", "example": "Jane" },
+          "LastName": { "type": "string", "example": "Doe" },
+          "UserType": { "type": "string", "example": "patron" },
+          "MailingAddress": { "type": "string", "example": "345 East Main St." }
         }
+      },
+      "Book": {
+        "type": "object",
+        "required": [
+          "BookID",
+          "Title",
+          "Author",
+          "ISBN",
+          "PublicationYear",
+          "Availability",
+          "Publisher"
+        ],
+        "properties": {
+          "BookID": { "type": "number", "example": 10 },
+          "Title": { "type": "string", "example": "Fahrenheit 451" },
+          "Author": { "type": "string", "example": "Ray Bradbury" },
+          "ISBN": { "type": "string", "example": "9780006546061" },
+          "Genre": { "type": "string", "example": "Science Fiction" },
+          "PublicationYear": { "type": "number", "example": 1993 },
+          "Availability": { "type": "boolean", "example": "False" },
+          "Publisher": { "type": "string", "example": "Harper Collins" }
+        }
+      },
+      "Loan": {
+        "type": "object",
+        "required": ["LoanID", "BookID", "UserID", "DateOut", "DueDate"],
+        "properties": {
+          "LoanID": { "type": "number", "example": 10 },
+          "BookID": { "type": "number", "example": 1 },
+          "UserID": { "type": "number", "example": 1 },
+          "DateOut": { "type": "string", "example": "2024-11-04" },
+          "DueDate": { "type": "string", "example": "2024-11-25" }
+        }
+      },
+      "Reservation": {
+        "type": "object",
+        "required": ["ReservationID", "UserID", "BookID", "ReservationDate"],
+        "properties": {
+          "ReservationID": { "type": "number", "example": 10 },
+          "UserID": { "type": "number", "example": 1 },
+          "BookID": { "type": "number", "example": 1 },
+          "ReservationDate": { "type": "string", "example": "2024-11-25" }
+        }
+      }
     }
   },
   "paths": {
     "/users/": {
       "get": {
-        "description": "Retrieve all users",
+        "description": "Retrieve all users.",
         "responses": {
           "200": {
             "description": "OK",
@@ -85,9 +125,9 @@
         }
       }
     },
-    "/users/{userType}": {
+    "/users/type/{userType}": {
       "get": {
-        "description": "Retrieve all users of the specified user type. Either: librarian or patron",
+        "description": "Retrieve all users of the specified user type. Either: patron or staff",
         "parameters": [
           {
             "name": "userType",
@@ -120,59 +160,59 @@
       }
     },
     "/users/login": {
-        "get": {
-            "summary": "User login",
-            "description": "Authenticates a user based on query parameters and returns a session token.",
-            "parameters": [
-            {
-                "name": "email",
-                "in": "query",
-                "required": true,
+      "get": {
+        "summary": "User login",
+        "description": "Authenticates a user based on query parameters and returns a session token.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "user@example.com"
+            }
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "password",
+              "example": "password123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
                 "schema": {
-                "type": "string",
-                "example": "user@example.com"
-                }
-            },
-            {
-                "name": "password",
-                "in": "query",
-                "required": true,
-                "schema": {
-                "type": "string",
-                "format": "password",
-                "example": "password123"
-                }
-            }
-            ],
-            "responses": {
-            "200": {
-                "description": "Login successful",
-                "content": {
-                "application/json": {
-                    "schema": {
-                    "type": "object",
-                    "properties": {
-                        "token": {
-                        "type": "string",
-                        "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                        },
-                        "user": {
-                        "$ref": "#/components/schemas/User"
-                        }
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
                     }
-                    }
+                  }
                 }
-                }
-            },
-            "401": {
-                "description": "Unauthorized - Invalid email or password"
-            },
-            "500": {
-                "description": "Internal Server Error"
+              }
             }
-            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid email or password"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
-      },
+      }
+    },
     "users/logout": {
       "get": {
         "summary": "User logout",
@@ -191,37 +231,45 @@
       }
     },
     "/books": {
-        "get": {
-          "description": "Retrieve all books with optional filtering for availability.",
-          "parameters": [
-            {
-              "name": "availability",
-              "in": "query",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "enum": [true, false]
-              }
+      "get": {
+        "description": "Retrieve all books with optional filtering by availability or ISBN number.",
+        "parameters": [
+          {
+            "name": "availability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "enum": [true, false]
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK - List of books matching the filter.",
-              "content": {
-                "application/json": {
-                  "schema": { "$ref": "#/components/schemas/Book" }
-                }
-              }
-            },
-            "500": {
-              "description": "Internal Server Error"
+          },
+          {
+            "name": "ISBN",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK - List of books matching the filter.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
         }
+      }
     },
     "/books/{bookId}": {
       "get": {
-        "description": "Retrieve one book by its id.",
+        "description": "Retrieve one book by its ID.",
         "parameters": [
           {
             "name": "bookId",
@@ -253,78 +301,20 @@
         }
       }
     },
-    "/books/{isbn}": {
-      "get": {
-        "description": "Retrieve one book by its ISBN.",
-        "parameters": [
-          {
-            "name": "isbn",
-            "in": "path",
-            "required": true,
-            "schema": {
-            "type": "string",
-            "example": "9783161484100"
-            }
-        }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Book" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Must use a valid ISBN to find a book."
-          },
-          "404": {
-            "description": "Not Found - No book exists with that ISBN."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/books?availability={availability}": {
-      "get": {
-        "description": "Retrieve all books with the specified availability. Ex: False or True",
-        "parameters": [
-          {
-            "name": "availability",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Book" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Must use a valid availability value to find books by availability."
-          },
-          "404": {
-            "description": "Not Found - No books exist with that availability preference"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/reservations": {
       "get": {
-        "description": "Retrieve all current reservations.",
+        "description": "Retrieve all current reservations or filter by UserID.",
+        "parameters": [
+          {
+            "name": "UserID",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "2"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -374,43 +364,29 @@
         }
       }
     },
-    "/reservations/{userId}": {
+    "/loans": {
       "get": {
-        "description": "Retrieve all reservations associated with a specific user by using their user id.",
+        "description": "Retrieve all current loans or filter by either UserID or BookID.",
         "parameters": [
           {
-            "name": "userId",
-            "in": "path",
-            "required": true,
+            "name": "UserID",
+            "in": "query",
+            "required": false,
             "schema": {
-              "type": "string"
+              "type": "number",
+              "example": "2"
+            }
+          },
+          {
+            "name": "BookID",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": "2"
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Reservation" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Must use a valid user id to find reservations by user."
-          },
-          "404": {
-            "description": "Not Found - No user exists with that id or they have no current reservations."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/loans": {
-      "get": {
-        "description": "Retrieve all current loans.",
         "responses": {
           "200": {
             "description": "OK",
@@ -453,74 +429,6 @@
           },
           "404": {
             "description": "Not Found - No loan exists with that id."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/loans/{userId}": {
-      "get": {
-        "description": "Retrieve all loans associated with a user by their user id.",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Loan" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Must use a valid user id to find the associated loans."
-          },
-          "404": {
-            "description": "Not Found - No user exists with that id or the user has no current loans."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/loans/{bookId}": {
-      "get": {
-        "description": "Retrieve all loans associated with a specific book by using the book id.",
-        "parameters": [
-          {
-            "name": "bookId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Loan" }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request - Must use a valid book id to find loans by book."
-          },
-          "404": {
-            "description": "Not Found - No books exists with that id."
           },
           "500": {
             "description": "Internal Server Error"
