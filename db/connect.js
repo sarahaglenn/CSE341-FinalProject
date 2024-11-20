@@ -11,7 +11,7 @@ const mongodb = async () => {
       if (!uri) {
         throw new Error('MongoDB URI is not defined');
       }
-      client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+      client = new MongoClient(uri);
       await client.connect();
       console.log('Connected to database');
     } catch (err) {

@@ -235,7 +235,7 @@
         "description": "Retrieve all books with optional filtering by availability or ISBN number.",
         "parameters": [
           {
-            "name": "availability",
+            "name": "Availability",
             "in": "query",
             "required": false,
             "schema": {
@@ -407,7 +407,7 @@
         "description": "Retrieve one loan by its loan id.",
         "parameters": [
           {
-            "name": "loanId",
+            "name": "LoanID",
             "in": "path",
             "required": true,
             "schema": {

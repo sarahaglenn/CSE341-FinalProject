@@ -25,6 +25,6 @@ const loanSchema = new Schema({
   }
 });
 
-const Loan = mongoose.model('Loan', loanSchema);
+const Loan = mongoose.model('Loan', loanSchema, 'Loan');
 
 module.exports = Loan;

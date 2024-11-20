@@ -2,11 +2,11 @@ const Book = require('../models/book-model');
 // const { ObjectId } = require('mongodb'); //not currently using this
 
 const getBooks = async (req, res) => {
-  const { availability, ISBN } = req.query;
+  const { Availability, ISBN } = req.query;
 
   const filter = {};
-  if (availability) {
-    filter.Availability = availability.toLowerCase() === 'true';
+  if (Availability) {
+    filter.Availability = Availability === 'true';
   }
   if (ISBN) {
     filter.ISBN = ISBN;

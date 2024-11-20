@@ -10,8 +10,8 @@ router.get('/:userId', usersController.getUserById);
 
 router.get('/type/:userType', usersController.getUserByType);
 
-router.get('/login', usersController.userLogin);
+// router.get('/login', usersController.userLogin); not yet implemented
 
-router.get('/logout', usersController.userLogout);
+// router.get('/logout', usersController.userLogout); //not yet implemented
 
 module.exports = router;

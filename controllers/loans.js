@@ -2,26 +2,29 @@ const Loan = require('../models/loan-model');
 // const { ObjectId } = require('mongodb'); // not currently using this.
 
 const getLoans = async (req, res) => {
-  const { BookId, UserId } = req.query;
+  const { BookID, UserID } = req.query;
 
   const filter = {};
-  if (BookId) {
-    filter.BookID = BookId;
+  if (BookID) {
+    filter.BookID = BookID;
   }
-  if (UserId) {
-    filter.UserID = UserId;
+  if (UserID) {
+    filter.UserID = UserID;
   }
   try {
     const loans = await Loan.find(filter);
-    // res.setHeader('Content-Type', 'application/json'); //handled by express
-    res.status(200).json(loans);
+    if (loans > 0) {
+      res.status(200).json(loans);
+    } else {
+      return res.status(404).json({ error: 'No loans exist with those parameters.' })
+    }
   } catch (error) {
     res.status(500).json({ error: 'Error retrieving loans', detail: error.message });
   }
 };
 
 const getLoanById = async (req, res) => {
-  const loanId = parseInt(req.params.loanID, 10);
+  const loanId = parseInt(req.params.loanId, 10);
   if (isNaN(loanId)) {
     return res.status(400).json({ error: 'Invalid Loan ID. It must be a number.' });
   }

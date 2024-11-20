@@ -2,11 +2,11 @@ const Reservation = require('../models/reservation-model');
 // const { ObjectId } = require('mongodb'); // not currently using this.
 
 const getReservations = async (req, res) => {
-  const { UserId } = req.query;
+  const { UserID } = req.query;
 
   const filter = {};
-  if (UserId) {
-    filter.userId = UserId;
+  if (UserID) {
+    filter.UserID = UserID;
   }
   try {
     const reservations = await Reservation.find(filter);
@@ -20,7 +20,7 @@ const getReservations = async (req, res) => {
 const getReservationById = async (req, res) => {
   const reservationId = req.params.reservationId;
   try {
-    const reservation = await Reservation.find({ ReservationId: reservationId });
+    const reservation = await Reservation.find({ ReservationID: reservationId });
     if (reservation) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(reservation);
