@@ -6,44 +6,49 @@ const getLoans = async (req, res) => {
 
   const filter = {};
   if (BookID) {
-    filter.BookID = BookID;
+    const bookIdNumber = parseInt(BookID, 10);
+    if (isNaN(bookIdNumber)) {
+      return res.status(400).json({ error: 'Invalid BookID. Must be a number.' });
+    }
+    filter.BookID = bookIdNumber;
   }
   if (UserID) {
-    filter.UserID = UserID;
+    const userIdNumber = parseInt(UserID, 10);
+    if (isNaN(userIdNumber)) {
+      return res.status(400).json({ error: 'Invalid UserID. Must be a number.' });
+    }
+    filter.UserID = userIdNumber;
   }
   try {
     const loans = await Loan.find(filter);
-    if (loans > 0) {
+    if (loans.length > 0) {
       res.status(200).json(loans);
     } else {
       return res.status(404).json({ error: 'No loans exist with those parameters.' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving loans', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const getLoanById = async (req, res) => {
   const loanId = parseInt(req.params.loanId, 10);
   if (isNaN(loanId)) {
-    return res.status(400).json({ error: 'Invalid Loan ID. It must be a number.' });
+    return res.status(400).json({ error: 'Invalid LoanID. It must be a number.' });
   }
 
   try {
     const loan = await Loan.findOne({ LoanID: loanId });
     if (loan) {
-      //   res.setHeader('Content-Type', 'application/json'); //handled by express
       res.status(200).json(loan);
     } else {
-      res.status(404).json({ error: 'No loans exists with that id' });
+      res.status(404).json({ error: 'No loan exists with that id' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving loan.', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
-// const getLoanByUserId = async (req, res) => { }; // handled with query params to make clearer
-// const getLoanByBookId = async (req, res) => { };
 const createLoan = async (req, res) => {
   const loan = {
     BookID: req.body.BookID,
@@ -66,6 +71,4 @@ module.exports = {
   getLoans,
   getLoanById,
   createLoan
-  // getLoanByUserId,
-  // getLoanByBookId
 };
