@@ -10,6 +10,4 @@ router.get('/:reservationId', reservationsController.getReservationById);
 
 router.post('/', reservationsController.createReservation);
 
-// router.get('/:userId', reservationsController.getReservationByUserId); // implement with query params instead
-
 module.exports = router;
