@@ -1,5 +1,5 @@
 const Book = require('../models/book-model');
-const { ObjectId } = require('mongodb').ObjectId;
+// const { ObjectId } = require('mongodb').ObjectId;
 
 const getBooks = async (req, res) => {
   const { Availability, ISBN } = req.query;
@@ -56,11 +56,10 @@ const createBook = async (req, res) => {
   const result = await Book.create(book);
   console.log(result);
 
-
-  if(result._id != null){
+  if (result._id != null) {
     res.status(200).json(book);
   } else {
-    res.status(500).json(response.error || "Some error occured while adding the book");
+    res.status(500).json(response.error || 'Some error occurred while adding the book');
   }
 };
 
