@@ -1,2 +1,51 @@
 ### GET all users
 http://localhost:3000/users/
+
+
+### POST NEW BOOKS
+POST http://localhost:3000/books/
+Content-Type: application/json
+
+{
+    "Title": "Harry Potter and the Sorcerer's Stone",
+    "Author": "J.K. Rowling",
+    "ISBN": "978-0-7475-3269-9",
+    "Genre": "Fantasy",
+    "PublicationYear": 1997,
+    "Availability": true,
+    "Publisher": "Bloomsbury Pub Ltd"
+}
+
+### POST NEW LOANS
+
+POST http://localhost:3000/loans/
+Content-Type: application/json
+
+{
+    "BookID": "673295e77293e43e440dd431",
+    "DateOut": "11/20/2024",
+    "DueDate": "12/20/2024",
+    "UserID": "673418977293e43e44651db4"
+}
+
+### POST RESERVATION
+
+POST http://localhost:3000/reservations/
+Content-Type: application/json
+
+{
+    "BookID": "673295e77293e43e440dd431",
+    "ReservationDate": "11/20/2024",
+    "UserID": "673418977293e43e44651db4"
+}
+
+### POST User
+POST http://localhost:3000/users/
+Content-Type: application/json
+
+{
+    "FirstName": "Emily",
+    "LastName": "Whitney",
+    "UserType": "staff",
+    "MailingAddress": "123 Alphabet Dr. AnyCity, AnyState 12345" 
+}

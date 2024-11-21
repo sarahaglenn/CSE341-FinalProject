@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const reservationSchema = new Schema({
   ReservationID: {
-    type: Number,
-    required: true,
+    type: String,
+    //required: true,
     unique: true
   },
   BookID: {
-    type: Number,
+    type: String,
     required: true
   },
   ReservationDate: {
@@ -16,7 +16,7 @@ const reservationSchema = new Schema({
     required: true
   },
   UserID: {
-    type: Number,
+    type: String,
     required: true
   }
 });

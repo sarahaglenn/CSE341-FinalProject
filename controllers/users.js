@@ -52,13 +52,33 @@ const getUserByType = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  const user = {
+    FirstName: req.body.FirstName,
+    LastName: req.body.LastName,
+    UserType: req.body.UserType, 
+    MailingAddress: req.body.MailingAddress    
+  };
+
+  const result = await User.create(user);
+  console.log(result);
+
+
+  if(result._id != null){
+    res.status(200).json(user);
+  } else {
+    res.status(500).json(response.error || "Some error occured while adding the user");
+  }
+}
+
 // const userLogin = async (req, res) => {}; // not yet implemented. Should these routes be in auth folder instead?
 // const userLogout = async (req, res) => {};
 
 module.exports = {
   getUsers,
   getUserById,
-  getUserByType
+  getUserByType,
+  createUser
   // userLogin, // not yet implemented
   // userLogout
 };
