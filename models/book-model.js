@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const bookSchema = new Schema({
   BookID: {
     type: Number,
-    //required: true, This cannot be required because then we have to manually insert it.
+    required: true,
     unique: true
   },
   Title: {

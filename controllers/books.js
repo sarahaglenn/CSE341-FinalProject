@@ -54,7 +54,7 @@ const createBook = async (req, res) => {
   };
 
   const result = await Book.create(book);
-  console.log(result);
+  console.log(result); //After testing is finished, can these be removed?
 
   if (result._id != null) {
     res.status(200).json(book);

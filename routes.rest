@@ -16,6 +16,20 @@ Content-Type: application/json
     "Publisher": "Bloomsbury Pub Ltd"
 }
 
+### POST NEW LOANS -- Example using numbers for ID values
+### Still need to add LoanID to the controller function 
+
+POST http://localhost:3000/loans/
+Content-Type: application/json
+
+{
+    "LoanID": 5,
+    "BookID": 1,
+    "DateOut": "2024-11-20",
+    "DueDate": "2024-12-20",
+    "UserID": 2
+}
+
 ### POST NEW LOANS
 
 POST http://localhost:3000/loans/

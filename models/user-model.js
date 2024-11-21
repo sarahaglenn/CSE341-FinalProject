@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   UserID: {
-    type: String,
-    //required: true,
+    type: Number,
+    required: true,
     unique: true
   },
   FirstName: {
