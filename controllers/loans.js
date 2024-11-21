@@ -47,22 +47,20 @@ const getLoanById = async (req, res) => {
 const createLoan = async (req, res) => {
   const loan = {
     BookID: req.body.BookID,
-    DateOut:req.body.DateOut,
-    DueDate:req.body.DueDate,
-    UserID:req.body.UserID
+    DateOut: req.body.DateOut,
+    DueDate: req.body.DueDate,
+    UserID: req.body.UserID
   };
 
   const result = await Loan.create(loan);
   console.log(result);
 
-
-  if(result._id != null){
+  if (result._id != null) {
     res.status(200).json(loan);
   } else {
-    res.status(500).json(response.error || "Some error occured while adding the loan");
+    res.status(500).json(response.error || 'Some error occurred while adding the loan');
   }
 };
-
 
 module.exports = {
   getLoans,
