@@ -32,7 +32,26 @@ const getReservationById = async (req, res) => {
   }
 };
 
+const createReservation = async (req, res) => {
+  const reservation = {
+    BookID: req.body.BookID,
+    ReservationDate: req.body.ReservationDate,
+    UserID:req.body.UserID
+  };
+
+  const result = await Reservation.create(reservation);
+  console.log(result);
+
+
+  if(result._id != null){
+    res.status(200).json(reservation);
+  } else {
+    res.status(500).json(response.error || "Some error occured while adding the reservation");
+  }
+}; 
+
 module.exports = {
   getReservations,
-  getReservationById
+  getReservationById,
+  createReservation
 };

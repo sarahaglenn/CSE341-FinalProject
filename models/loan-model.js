@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 
 const loanSchema = new Schema({
   LoanID: {
-    type: Number,
-    required: true,
+    type: String,
+    //required: true,
     unique: true
   },
   BookID: {
-    type: Number,
+    type: String,
     required: true
   },
   DateOut: {
@@ -20,7 +20,7 @@ const loanSchema = new Schema({
     required: true
   },
   UserID: {
-    type: Number,
+    type: String,
     required: true
   }
 });

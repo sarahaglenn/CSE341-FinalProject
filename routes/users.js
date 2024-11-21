@@ -10,6 +10,7 @@ router.get('/:userId', usersController.getUserById);
 
 router.get('/type/:userType', usersController.getUserByType);
 
+router.post('/', usersController.createUser);
 // router.get('/login', usersController.userLogin); not yet implemented
 
 // router.get('/logout', usersController.userLogout); //not yet implemented

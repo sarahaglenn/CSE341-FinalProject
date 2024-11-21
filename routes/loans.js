@@ -8,6 +8,8 @@ router.get('/', loansController.getLoans);
 
 router.get('/:loanId', loansController.getLoanById);
 
+router.post('/', loansController.createLoan);
+
 // router.get('/:userId', loansController.getLoanByUserId); // Trying with query params instead
 
 // router.get('/:bookId', loansController.getLoanByBookId); // Trying with query params instead

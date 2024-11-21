@@ -1,5 +1,5 @@
 const Book = require('../models/book-model');
-// const { ObjectId } = require('mongodb'); //not currently using this
+const { ObjectId } = require('mongodb').ObjectId;
 
 const getBooks = async (req, res) => {
   const { Availability, ISBN } = req.query;
@@ -42,7 +42,30 @@ const getBookById = async (req, res) => {
   }
 };
 
+const createBook = async (req, res) => {
+  const book = {
+    Title: req.body.Title,
+    Author: req.body.Author,
+    ISBN: req.body.ISBN,
+    Genre: req.body.Genre,
+    PublicationYear: req.body.PublicationYear,
+    Availability: req.body.Availability,
+    Publisher: req.body.Publisher
+  };
+
+  const result = await Book.create(book);
+  console.log(result);
+
+
+  if(result._id != null){
+    res.status(200).json(book);
+  } else {
+    res.status(500).json(response.error || "Some error occured while adding the book");
+  }
+};
+
 module.exports = {
   getBooks,
-  getBookById
+  getBookById,
+  createBook
 };
