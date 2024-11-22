@@ -52,7 +52,7 @@ const createReservation = async (req, res) => {
   if (result._id != null) {
     res.status(200).json(reservation);
   } else {
-    res.status(500).json(response.error || 'Some error occurred while adding the reservation');
+    res.status(500).json(res.error || 'Some error occurred while adding the reservation');
   }
 };
 
