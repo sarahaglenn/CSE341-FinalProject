@@ -61,7 +61,7 @@ const createBook = async (req, res) => {
   if (result._id != null) {
     res.status(200).json(book);
   } else {
-    res.status(500).json(response.error || 'Some error occurred while adding the book');
+    res.status(500).json(res.error || 'Some error occurred while adding the book');
   }
 };
 

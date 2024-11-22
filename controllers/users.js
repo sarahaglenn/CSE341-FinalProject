@@ -59,12 +59,12 @@ const createUser = async (req, res) => {
   };
 
   const result = await User.create(user);
-  console.log(result)
+  console.log(result);
 
   if (result._id != null) {
     res.status(200).json(user);
   } else {
-    res.status(500).json(response.error || 'Some error occurred while adding the user');
+    res.status(500).json(res.error || 'Some error occurred while adding the user');
   }
 };
 
