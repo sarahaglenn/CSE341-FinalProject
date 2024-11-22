@@ -45,7 +45,7 @@
           "ISBN": { "type": "string", "example": "9780006546061" },
           "Genre": { "type": "string", "example": "Science Fiction" },
           "PublicationYear": { "type": "number", "example": 1993 },
-          "Availability": { "type": "boolean", "example": false },
+          "Availability": { "type": "boolean", "example": "False" },
           "Publisher": { "type": "string", "example": "Harper Collins" }
         }
       },
@@ -75,11 +75,10 @@
   "paths": {
     "/users/": {
       "get": {
-        "summary": "Retrieve all users",
-        "description": "Retrieve a list of all users.",
+        "description": "Retrieve all users.",
         "responses": {
           "200": {
-            "description": "OK - All users returned",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/User" }
@@ -90,25 +89,61 @@
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/users/{userId}": {
-      "get": {
-        "summary": "Retrieve a user with UserID",
-        "description": "Retrieve one user by their id.",
+      },
+      "post": {
+        "description": "Create a new user",
         "parameters": [
           {
-            "name": "UserID",
-            "in": "path",
-            "required": true,
+            "name": "body",
+            "in": "body",
             "schema": {
-              "type": "number"
+              "type": "object",
+              "properties": {
+                "UserID": {
+                  "example": "any number"
+                },
+                "FirstName": {
+                  "example": "any"
+                },
+                "LastName": {
+                  "example": "any"
+                },
+                "UserType": {
+                  "example": "staff or patron"
+                },
+                "MailingAddress": {
+                  "example": "any"
+                }
+              }
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching user returned.",
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "description": "Retrieve one user by their id.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/User" }
@@ -116,7 +151,7 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid UserID. Must be a number."
+            "description": "Bad Request - Must use a valid user id to find a user."
           },
           "404": {
             "description": "Not Found - No user exists with that id."
@@ -129,7 +164,6 @@
     },
     "/users/type/{userType}": {
       "get": {
-        "summary": "Retrieve all users by type",
         "description": "Retrieve all users of the specified user type. Either: patron or staff",
         "parameters": [
           {
@@ -137,14 +171,13 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": ["patron", "staff"]
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching users returned.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/User" }
@@ -152,10 +185,10 @@
             }
           },
           "400": {
-            "description": "Bad Request - Must use a valid user type to find users."
+            "description": "Bad Request - Must use a valid user type to find users"
           },
           "404": {
-            "description": "Not Found - No users exist with that user type."
+            "description": "Not Found - No users exist with that user type"
           },
           "500": {
             "description": "Internal Server Error"
@@ -217,7 +250,7 @@
         }
       }
     },
-    "/users/logout": {
+    "users/logout": {
       "get": {
         "summary": "User logout",
         "description": "Logs out the user by invalidating the current session or token.",
@@ -236,7 +269,6 @@
     },
     "/books": {
       "get": {
-        "summary": "Retrieve all books with optional filtering",
         "description": "Retrieve all books with optional filtering by availability or ISBN number.",
         "parameters": [
           {
@@ -244,10 +276,9 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "enum": ["true", "false"]
-            },
-            "description": "Availability of the book. Use 'true' for available and 'false' for unavailable."
+              "type": "boolean",
+              "enum": [true, false]
+            }
           },
           {
             "name": "ISBN",
@@ -267,8 +298,51 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request - Invalid query parameters."
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a New Book",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "BookID": {
+                  "example": "any number"
+                },
+                "Title": {
+                  "example": "any"
+                },
+                "Author": {
+                  "example": "any"
+                },
+                "ISBN": {
+                  "example": "any please exclude the hyphens"
+                },
+                "Genre": {
+                  "example": "any"
+                },
+                "PublicationYear": {
+                  "example": "any number"
+                },
+                "Availability": {
+                  "example": "true or false"
+                },
+                "Publisher": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -278,21 +352,20 @@
     },
     "/books/{bookId}": {
       "get": {
-        "summary": "Retrieve one book with BookID",
         "description": "Retrieve one book by its ID.",
         "parameters": [
           {
-            "name": "BookID",
+            "name": "bookId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching book returned",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Book" }
@@ -300,7 +373,7 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid BookID. Must be a number."
+            "description": "Bad Request - Must use a valid book id to find a book."
           },
           "404": {
             "description": "Not Found - No book exists with that id."
@@ -313,7 +386,6 @@
     },
     "/reservations": {
       "get": {
-        "summary": "Retrieve all reservations with optional filtering",
         "description": "Retrieve all current reservations or filter by UserID.",
         "parameters": [
           {
@@ -322,21 +394,52 @@
             "required": false,
             "schema": {
               "type": "number",
-              "example": 2
+              "example": "2"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching reservations returned.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Reservation" }
               }
             }
           },
-          "400": {
-            "description": "Bad Request - Invalid UserID. Must be a number."
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Reservation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReservationID": {
+                  "example": "any number"
+                },
+                "BookID": {
+                  "example": "any number"
+                },
+                "ReservationDate": {
+                  "example": "any"
+                },
+                "UserID": {
+                  "example": "any number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -346,22 +449,20 @@
     },
     "/reservations/{reservationId}": {
       "get": {
-        "summary": "Retrieve one reservation with ReservationID",
         "description": "Retrieve one reservation by its reservation id.",
         "parameters": [
           {
-            "name": "ReservationId",
+            "name": "reservationId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number",
-              "example": 2
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching reservation returned.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Reservation" }
@@ -369,7 +470,7 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid ReservationID. Must be a number."
+            "description": "Bad Request - Must use a valid reservation id to find a reservation."
           },
           "404": {
             "description": "Not Found - No reservation exists with that id."
@@ -382,7 +483,6 @@
     },
     "/loans": {
       "get": {
-        "summary": "Retrieve all loans with optional filtering",
         "description": "Retrieve all current loans or filter by either UserID or BookID.",
         "parameters": [
           {
@@ -391,7 +491,7 @@
             "required": false,
             "schema": {
               "type": "number",
-              "example": 2
+              "example": "2"
             }
           },
           {
@@ -400,24 +500,55 @@
             "required": false,
             "schema": {
               "type": "number",
-              "example": 2
+              "example": "2"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching loans returned.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Loan" }
               }
             }
           },
-          "400": {
-            "description": "Bad Request - Invalid query parameters (must be a number)."
-          },
-          "404": {
-            "description": "Not Found - No loan exists with the given filters."
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Loan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "LoanID": {
+                  "example": "any Number"
+                },
+                "BookID": {
+                  "example": "any Number"
+                },
+                "DateOut": {
+                  "example": "any"
+                },
+                "DueDate": {
+                  "example": "any"
+                },
+                "UserID": {
+                  "example": "any Number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -427,7 +558,6 @@
     },
     "/loans/{loanId}": {
       "get": {
-        "summary": "Retrieve one loan with LoanID",
         "description": "Retrieve one loan by its loan id.",
         "parameters": [
           {
@@ -435,14 +565,13 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "number",
-              "example": 3
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK - Matching loan returned.",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/Loan" }
@@ -450,7 +579,7 @@
             }
           },
           "400": {
-            "description": "Bad Request - Invalid LoanID. Must be a number."
+            "description": "Bad Request - Must use a valid loan id to find a loan."
           },
           "404": {
             "description": "Not Found - No loan exists with that id."

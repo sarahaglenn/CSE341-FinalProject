@@ -51,6 +51,7 @@ const getLoanById = async (req, res) => {
 
 const createLoan = async (req, res) => {
   const loan = {
+    LoanID: req.body.LoanID,
     BookID: req.body.BookID,
     DateOut: req.body.DateOut,
     DueDate: req.body.DueDate,
@@ -58,7 +59,6 @@ const createLoan = async (req, res) => {
   };
 
   const result = await Loan.create(loan);
-  console.log(result);
 
   if (result._id != null) {
     res.status(200).json(loan);
