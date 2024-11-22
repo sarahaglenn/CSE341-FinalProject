@@ -7,6 +7,7 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Root route to test the server
 app.get('/', (req, res) => {

@@ -20,7 +20,7 @@
         "type": "object",
         "required": ["UserID", "FirstName", "LastName", "UserType", "MailingAddress"],
         "properties": {
-          "UserID": { "type": "number", "example": 10 },
+          "UserID": { "type": "number", "example": 10, "description": "Must be a unique number." },
           "FirstName": { "type": "string", "example": "Jane" },
           "LastName": { "type": "string", "example": "Doe" },
           "UserType": { "type": "string", "example": "patron" },
@@ -92,35 +92,23 @@
       },
       "post": {
         "description": "Create a new user",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "UserID": {
-                  "example": "any number"
-                },
-                "FirstName": {
-                  "example": "any"
-                },
-                "LastName": {
-                  "example": "any"
-                },
-                "UserType": {
-                  "example": "staff or patron"
-                },
-                "MailingAddress": {
-                  "example": "any"
-                }
-              }
+        "requestBody": {
+          "description": "User data for creation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -403,44 +391,23 @@
       },
       "post": {
         "description": "Create a New Book",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "BookID": {
-                  "example": "any number"
-                },
-                "Title": {
-                  "example": "any"
-                },
-                "Author": {
-                  "example": "any"
-                },
-                "ISBN": {
-                  "example": "any please exclude the hyphens"
-                },
-                "Genre": {
-                  "example": "any"
-                },
-                "PublicationYear": {
-                  "example": "any number"
-                },
-                "Availability": {
-                  "example": "true or false"
-                },
-                "Publisher": {
-                  "example": "any"
-                }
-              }
+        "requestBody": {
+          "description": "Book data for creation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Book" }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -561,32 +528,23 @@
       },
       "post": {
         "description": "Create a new Reservation",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "ReservationID": {
-                  "example": "any number"
-                },
-                "BookID": {
-                  "example": "any number"
-                },
-                "ReservationDate": {
-                  "example": "any"
-                },
-                "UserID": {
-                  "example": "any number"
-                }
-              }
+        "requestBody": {
+          "description": "Reservation data for creation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Reservation" }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Reservation" }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -716,35 +674,23 @@
       },
       "post": {
         "description": "Create a new Loan",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "LoanID": {
-                  "example": "any Number"
-                },
-                "BookID": {
-                  "example": "any Number"
-                },
-                "DateOut": {
-                  "example": "any"
-                },
-                "DueDate": {
-                  "example": "any"
-                },
-                "UserID": {
-                  "example": "any Number"
-                }
-              }
+        "requestBody": {
+          "description": "Loan data for creation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Loan" }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Loan created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Loan" }
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
