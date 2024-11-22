@@ -20,8 +20,11 @@ const getBooks = async (req, res) => {
 
   try {
     const books = await Book.find(filter);
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(books);
+    if (books.length > 0) {
+      res.status(200).json(books);
+    } else {
+      res.status(404).json({ error: 'No books exist matching the given query parameters.' });
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }

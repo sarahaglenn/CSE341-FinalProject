@@ -14,8 +14,11 @@ const getReservations = async (req, res) => {
   }
   try {
     const reservations = await Reservation.find(filter);
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(reservations);
+    if (reservations.length > 0) {
+      res.status(200).json(reservations);
+    } else {
+      res.status(404).json({ error: 'No reservations exist matching the given query parameters.' });
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
