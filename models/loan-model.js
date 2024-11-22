@@ -4,8 +4,7 @@ const Schema = mongoose.Schema;
 const loanSchema = new Schema({
   LoanID: {
     type: Number,
-    // required: true, keeping untrue for example in routes.rest.
-    // once the controller function has been updated, this can be changed back to required.
+    required: true,
     unique: true
   },
   BookID: {

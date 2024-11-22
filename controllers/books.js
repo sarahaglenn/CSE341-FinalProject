@@ -46,6 +46,7 @@ const getBookById = async (req, res) => {
 
 const createBook = async (req, res) => {
   const book = {
+    BookID: req.body.BookID,
     Title: req.body.Title,
     Author: req.body.Author,
     ISBN: req.body.ISBN,
@@ -56,7 +57,6 @@ const createBook = async (req, res) => {
   };
 
   const result = await Book.create(book);
-  console.log(result); //After testing is finished, can these be removed?
 
   if (result._id != null) {
     res.status(200).json(book);
