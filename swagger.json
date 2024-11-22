@@ -317,7 +317,6 @@
       }
     },
     "/books/{bookId}": {
-    "/books/{bookId}": {
       "get": {
         "description": "Retrieve one book by its ID.",
         "parameters": [
@@ -349,9 +348,8 @@
             "description": "Internal Server Error"
           }
         }
-      }
     },
-    "put": {
+      "put": {
         "summary": "Update an existing book",
         "description": "Update the details of a book identified by its ID.",
         "parameters": [
@@ -428,7 +426,6 @@
         }
       }
     },
-     "/reservations/{reservationId}": {
     "/reservations/{reservationId}": {
       "get": {
         "description": "Retrieve one reservation by its reservation id.",
@@ -461,7 +458,6 @@
             "description": "Internal Server Error"
           }
         }
-      }
     },
     "put": {
       "summary": "Update an existing reservation",
