@@ -1,5 +1,5 @@
 ### GET all users
-http://localhost:3000/users/
+http://localhost:3000/users
 
 
 ### POST NEW BOOKS
@@ -7,27 +7,14 @@ POST http://localhost:3000/books/
 Content-Type: application/json
 
 {
+    "BookID": 3,
     "Title": "Harry Potter and the Sorcerer's Stone",
     "Author": "J.K. Rowling",
-    "ISBN": "978-0-7475-3269-9",
+    "ISBN": "9780747532699",
     "Genre": "Fantasy",
     "PublicationYear": 1997,
     "Availability": true,
     "Publisher": "Bloomsbury Pub Ltd"
-}
-
-### POST NEW LOANS -- Example using numbers for ID values
-### Still need to add LoanID to the controller function 
-
-POST http://localhost:3000/loans/
-Content-Type: application/json
-
-{
-    "LoanID": 5,
-    "BookID": 1,
-    "DateOut": "2024-11-20",
-    "DueDate": "2024-12-20",
-    "UserID": 2
 }
 
 ### POST NEW LOANS
@@ -36,10 +23,11 @@ POST http://localhost:3000/loans/
 Content-Type: application/json
 
 {
-    "BookID": "673295e77293e43e440dd431",
+    "LoanID": 3,
+    "BookID": 3,
     "DateOut": "11/20/2024",
     "DueDate": "12/20/2024",
-    "UserID": "673418977293e43e44651db4"
+    "UserID": 2
 }
 
 ### POST RESERVATION
@@ -48,9 +36,10 @@ POST http://localhost:3000/reservations/
 Content-Type: application/json
 
 {
-    "BookID": "673295e77293e43e440dd431",
+    "ReservationID": 3, 
+    "BookID": 3,
     "ReservationDate": "11/20/2024",
-    "UserID": "673418977293e43e44651db4"
+    "UserID": 1
 }
 
 ### POST User
@@ -58,6 +47,7 @@ POST http://localhost:3000/users/
 Content-Type: application/json
 
 {
+    "UserID": 3,
     "FirstName": "Emily",
     "LastName": "Whitney",
     "UserType": "staff",

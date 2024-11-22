@@ -89,6 +89,43 @@
             "description": "Internal Server Error"
           }
         }
+      },
+      "post": {
+        "description": "Create a new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "UserID": {
+                  "example": "any number"
+                },
+                "FirstName": {
+                  "example": "any"
+                },
+                "LastName": {
+                  "example": "any"
+                },
+                "UserType": {
+                  "example": "staff or patron"
+                },
+                "MailingAddress": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/users/{userId}": {
@@ -125,6 +162,55 @@
         }
       }
     },
+    "/user/update/{userId}": {
+  "put": {
+    "summary": "Update an existing user",
+    "description": "Update the details of the user.",
+    "parameters": [
+      {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "description": "The ID of the user to update",
+        "schema": {
+          "type": "integer"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "The updated user object",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "User updated successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid input, object invalid"
+      },
+      "404": {
+        "description": "User not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
     "/users/type/{userType}": {
       "get": {
         "description": "Retrieve all users of the specified user type. Either: patron or staff",
@@ -314,6 +400,52 @@
             "description": "Internal Server Error"
           }
         }
+      },
+      "post": {
+        "description": "Create a New Book",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "BookID": {
+                  "example": "any number"
+                },
+                "Title": {
+                  "example": "any"
+                },
+                "Author": {
+                  "example": "any"
+                },
+                "ISBN": {
+                  "example": "any please exclude the hyphens"
+                },
+                "Genre": {
+                  "example": "any"
+                },
+                "PublicationYear": {
+                  "example": "any number"
+                },
+                "Availability": {
+                  "example": "true or false"
+                },
+                "Publisher": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/books/{bookId}": {
@@ -348,55 +480,57 @@
             "description": "Internal Server Error"
           }
         }
+      }
     },
-      "put": {
-        "summary": "Update an existing book",
-        "description": "Update the details of a book identified by its ID.",
-        "parameters": [
-          {
-            "name": "bookId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the book to update",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The updated book object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Book"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Book updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Book"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input, object invalid"
-          },
-          "404": {
-            "description": "Book not found"
-          },
-          "500": {
-            "description": "Internal server error"
+    "/book/update/{bookId}": {
+  "put": {
+    "summary": "Update an existing book",
+    "description": "Update the details of a book identified by its ID.",
+    "parameters": [
+      {
+        "name": "bookId",
+        "in": "path",
+        "required": true,
+        "description": "The ID of the book to update",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "The updated book object",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Book"
           }
         }
       }
     },
+    "responses": {
+      "200": {
+        "description": "Book updated successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Book"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid input, object invalid"
+      },
+      "404": {
+        "description": "Book not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
     "/reservations": {
       "get": {
         "description": "Retrieve all current reservations or filter by UserID.",
@@ -419,6 +553,40 @@
                 "schema": { "$ref": "#/components/schemas/Reservation" }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Reservation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ReservationID": {
+                  "example": "any number"
+                },
+                "BookID": {
+                  "example": "any number"
+                },
+                "ReservationDate": {
+                  "example": "any"
+                },
+                "UserID": {
+                  "example": "any number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -458,24 +626,37 @@
             "description": "Internal Server Error"
           }
         }
+      }
     },
-    "put": {
-      "summary": "Update an existing reservation",
-      "description": "Update the details of a reservation identified by its reservation ID.",
-      "parameters": [
-        {
-          "name": "reservationId",
-          "in": "path",
-          "required": true,
-          "description": "The ID of the reservation to update",
+    "/reservation/update/{resrvationId}": {
+  "put": {
+    "summary": "Update an existing reservation",
+    "description": "Update the details of a reservation identified by its reservation ID.",
+    "parameters": [
+      {
+        "name": "reservationId",
+        "in": "path",
+        "required": true,
+        "description": "The ID of the reservation to update",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "The updated reservation object",
+      "required": true,
+      "content": {
+        "application/json": {
           "schema": {
-            "type": "string"
+            "$ref": "#/components/schemas/Reservation"
           }
         }
-      ],
-      "requestBody": {
-        "description": "The updated reservation object",
-        "required": true,
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Reservation updated successfully",
         "content": {
           "application/json": {
             "schema": {
@@ -484,29 +665,18 @@
           }
         }
       },
-      "responses": {
-        "200": {
-          "description": "Reservation updated successfully",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Reservation"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Invalid input, object invalid"
-        },
-        "404": {
-          "description": "Reservation not found"
-        },
-        "500": {
-          "description": "Internal server error"
-        }
+      "400": {
+        "description": "Invalid input, object invalid"
+      },
+      "404": {
+        "description": "Reservation not found"
+      },
+      "500": {
+        "description": "Internal server error"
       }
     }
-  },
+  }
+},
     "/loans": {
       "get": {
         "description": "Retrieve all current loans or filter by either UserID or BookID.",
@@ -538,6 +708,43 @@
                 "schema": { "$ref": "#/components/schemas/Loan" }
               }
             }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Loan",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "LoanID": {
+                  "example": "any Number"
+                },
+                "BookID": {
+                  "example": "any Number"
+                },
+                "DateOut": {
+                  "example": "any"
+                },
+                "DueDate": {
+                  "example": "any"
+                },
+                "UserID": {
+                  "example": "any Number"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -579,23 +786,35 @@
         }
       }
     },
-    "put": {
-      "summary": "Update an existing loan.",
-      "description": "Modify the details of a loan identified by its ID.",
-      "parameters": [
-          {
-            "name": "loanId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the loan to update.",
-            "schema": {
-              "type": "string"
-            }
-          }
-      ],
-      "requestBody": {
-        "description": "The updated loan object.",
+    "/loan/update/{loadId}": {
+  "put": {
+    "summary": "Update an existing loan.",
+    "description": "Modify the details of a loan identified by its ID.",
+    "parameters": [
+      {
+        "name": "loanId",
+        "in": "path",
         "required": true,
+        "description": "The ID of the loan to update.",
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "description": "The updated loan object.",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Loan"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Loan updated successfully.",
         "content": {
           "application/json": {
             "schema": {
@@ -604,27 +823,18 @@
           }
         }
       },
-      "responses": {
-        "200": {
-          "description": "Loan updated successfully.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Loan"
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Invalid input - Object is invalid."
-        },
-        "404": {
-          "description": "Loan not found."
-        },
-        "500": {
-          "description": "Internal server error"
-        }
+      "400": {
+        "description": "Invalid input - Object is invalid."
+      },
+      "404": {
+        "description": "Loan not found."
+      },
+      "500": {
+        "description": "Internal server error"
       }
     }
+  }
+}
+
   }
 }

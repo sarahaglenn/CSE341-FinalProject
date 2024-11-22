@@ -6,21 +6,28 @@ const getReservations = async (req, res) => {
 
   const filter = {};
   if (UserID) {
-    filter.UserID = UserID;
+    const userIdNumber = parseInt(UserID, 10);
+    if (isNaN(userIdNumber)) {
+      return res.status(400).json({ error: 'Invalid UserID. Must be a number.' });
+    }
+    filter.UserID = userIdNumber;
   }
   try {
     const reservations = await Reservation.find(filter);
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(reservations);
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving reservations', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const getReservationById = async (req, res) => {
-  const reservationId = req.params.reservationId;
+  const reservationId = parseInt(req.params.reservationId);
+  if (isNaN(reservationId)) {
+    return res.status(400).json({ error: 'Invalid ReservationID. Must be a number.' });
+  }
   try {
-    const reservation = await Reservation.find({ ReservationID: reservationId });
+    const reservation = await Reservation.findOne({ ReservationID: reservationId });
     if (reservation) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(reservation);
@@ -28,19 +35,19 @@ const getReservationById = async (req, res) => {
       res.status(404).json({ error: 'No reservations exists with that id' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving reservation.', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const createReservation = async (req, res) => {
   const reservation = {
+    ReservationID: req.body.ReservationID,
     BookID: req.body.BookID,
     ReservationDate: req.body.ReservationDate,
     UserID: req.body.UserID
   };
 
   const result = await Reservation.create(reservation);
-  console.log(result);
 
   if (result._id != null) {
     res.status(200).json(reservation);

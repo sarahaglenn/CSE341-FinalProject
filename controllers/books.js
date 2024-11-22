@@ -5,7 +5,13 @@ const getBooks = async (req, res) => {
   const { Availability, ISBN } = req.query;
 
   const filter = {};
-  if (Availability) {
+
+  if (Availability !== undefined) {
+    if (Availability !== 'true' && Availability !== 'false') {
+      return res
+        .status(400)
+        .json({ error: 'Invalid value for Availability. Use "true" or "false".' });
+    }
     filter.Availability = Availability === 'true';
   }
   if (ISBN) {
@@ -17,33 +23,30 @@ const getBooks = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(books);
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving books', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const getBookById = async (req, res) => {
-  // It doesn't look like we plan to retrieve books by their generated id, so this can be
-  // removed along with the response in swagger.json
-
-  //   if (!ObjectId.isValid(req.params.id)) {
-  //     return res.status(400).json({ error: 'Must use a valid book id to find a book.' });
-  //   }
-  const bookId = req.params.bookId;
+  const bookId = parseInt(req.params.bookId, 10);
+  if (isNaN(bookId)) {
+    return res.status(400).json({ error: 'Invalid BookID. Must be a number.' });
+  }
   try {
     const book = await Book.findOne({ BookID: bookId });
     if (book) {
-      res.setHeader('Content-Type', 'application/json');
       res.status(200).json(book);
     } else {
       res.status(404).json({ error: 'No book exists with that id' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving book.', detail: error.message });
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const createBook = async (req, res) => {
   const book = {
+    BookID: req.body.BookID,
     Title: req.body.Title,
     Author: req.body.Author,
     ISBN: req.body.ISBN,
@@ -54,7 +57,6 @@ const createBook = async (req, res) => {
   };
 
   const result = await Book.create(book);
-  console.log(result); //After testing is finished, can these be removed?
 
   if (result._id != null) {
     res.status(200).json(book);
