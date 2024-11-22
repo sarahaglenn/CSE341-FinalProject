@@ -197,6 +197,35 @@
             "description": "Internal server error"
           }
         }
+      },
+      "delete": {
+        "summary": "Delete an existing user",
+        "description": "Deletes the user identified by their UserID.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to delete",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid UserID. Must be a number."
+          },
+          "404": {
+            "description": "Not Found - No user exists with that id."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
       }
     },
     "/users/type/{userType}": {
@@ -457,6 +486,35 @@
             "description": "Internal server error"
           }
         }
+      },
+      "delete": {
+        "summary": "Delete an existing book.",
+        "description": "Deletes the book identified by their BookID.",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the book to update",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid BookID. Must be a number."
+          },
+          "404": {
+            "description": "Not Found - No book exists with that id."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
       }
     },
     "/reservations": {
@@ -599,6 +657,35 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing Reservation.",
+        "description": "Deletes the Reservation identified by their ReservationID.",
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the reservation to update",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reservation deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid ReservationID. Must be a number."
+          },
+          "404": {
+            "description": "Not Found - No Reservation exists with that id."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         }
       }
@@ -752,6 +839,35 @@
           },
           "500": {
             "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an existing loan.",
+        "description": "Deletes the loan identified by their LoanID.",
+        "parameters": [
+          {
+            "name": "loanId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the loan to update.",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Loan deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid LoanID. Must be a number."
+          },
+          "404": {
+            "description": "Not Found - No Loan exists with that id."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         }
       }
