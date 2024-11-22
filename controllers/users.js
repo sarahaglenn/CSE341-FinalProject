@@ -59,7 +59,7 @@ const createUser = async (req, res) => {
   };
 
   const result = await User.create(user);
-  console.log(result)
+  console.log(result);
 
   if (result._id != null) {
     res.status(200).json(user);
