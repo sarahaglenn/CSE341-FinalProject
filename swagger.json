@@ -230,6 +230,55 @@
         }
       }
     },
+    "user/update":{
+      "put": {
+        "summary": "Update an existing user",
+        "description": "Update hte details of the user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the user to update",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The updated user object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input, object invalid"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/books": {
       "get": {
         "description": "Retrieve all books with optional filtering by availability or ISBN number.",
@@ -379,6 +428,7 @@
         }
       }
     },
+     "/reservations/{reservationId}": {
     "/reservations/{reservationId}": {
       "get": {
         "description": "Retrieve one reservation by its reservation id.",
@@ -413,6 +463,54 @@
         }
       }
     },
+    "put": {
+      "summary": "Update an existing reservation",
+      "description": "Update the details of a reservation identified by its reservation ID.",
+      "parameters": [
+        {
+          "name": "reservationId",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the reservation to update",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "description": "The updated reservation object",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Reservation"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reservation updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid input, object invalid"
+        },
+        "404": {
+          "description": "Reservation not found"
+        },
+        "500": {
+          "description": "Internal server error"
+        }
+      }
+    }
+  },
     "/loans": {
       "get": {
         "description": "Retrieve all current loans or filter by either UserID or BookID.",
@@ -482,6 +580,53 @@
           "500": {
             "description": "Internal Server Error"
           }
+        }
+      }
+    },
+    "put": {
+      "summary": "Update an existing loan.",
+      "description": "Modify the details of a loan identified by its ID.",
+      "parameters": [
+          {
+            "name": "loanId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the loan to update.",
+            "schema": {
+              "type": "string"
+            }
+          }
+      ],
+      "requestBody": {
+        "description": "The updated loan object.",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Loan"
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Loan updated successfully.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Loan"
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid input - Object is invalid."
+        },
+        "404": {
+          "description": "Loan not found."
+        },
+        "500": {
+          "description": "Internal server error"
         }
       }
     }
