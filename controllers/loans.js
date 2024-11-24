@@ -67,8 +67,44 @@ const createLoan = async (req, res) => {
   }
 };
 
+const updateLoan = async (req, res) => {
+  const loanId = parseInt(req.params.loanId, 10);
+
+  // Validate loanId
+  if (isNaN(loanId)) {
+    return res.status(400).json({ error: 'Invalid loanId. Must be a number.' });
+  }
+
+  const updateData = {
+    UserID: req.body.UserID,
+    BookID: req.body.BookID,
+    DateOut: req.body.DateOut,
+    DueDate: req.body.DueDate,
+  };
+
+  try {
+    const updatedLoan = await Loan.findOneAndUpdate(
+      { LoanID: loanId }, 
+      updateData,
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedLoan) {
+      return res.status(404).json({ error: 'Loan not found' });
+    }
+
+    res.status(200).json({
+      message: 'Loan updated successfully',
+      loan: updatedLoan,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
 module.exports = {
   getLoans,
   getLoanById,
-  createLoan
+  createLoan,
+  updateLoan,
 };

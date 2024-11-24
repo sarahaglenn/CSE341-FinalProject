@@ -68,8 +68,48 @@ const createBook = async (req, res) => {
   }
 };
 
+const updateBook = async (req, res) => {
+  const bookId = parseInt(req.params.bookId, 10);
+
+  // Validate bookId
+  if (isNaN(bookId)) {
+    return res.status(400).json({ error: 'Invalid bookId. Must be a number.' });
+  }
+
+  const updateData = {
+    Title: req.body.Title,
+    Author: req.body.Author,
+    ISBN: req.body.ISBN,
+    Genre: req.body.Genre,
+    PublicationYear: req.body.PublicationYear,
+    Availability: req.body.Availability,
+    Publisher: req.body.Publisher,
+  };
+
+  try {
+    const updatedBook = await Book.findOneAndUpdate(
+      { BookID: bookId },
+      updateData,
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.status(200).json({
+      message: 'Book updated successfully',
+      book: updatedBook,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
+
 module.exports = {
   getBooks,
   getBookById,
-  createBook
+  createBook,
+  updateBook,
 };

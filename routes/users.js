@@ -15,4 +15,8 @@ router.post('/', usersController.createUser);
 
 // router.get('/logout', usersController.userLogout); //not yet implemented
 
+// New PUT route to update a user
+router.put('/:userId', usersController.updateUser);
+
+
 module.exports = router;
