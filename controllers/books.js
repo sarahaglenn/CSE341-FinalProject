@@ -83,15 +83,14 @@ const updateBook = async (req, res) => {
     Genre: req.body.Genre,
     PublicationYear: req.body.PublicationYear,
     Availability: req.body.Availability,
-    Publisher: req.body.Publisher,
+    Publisher: req.body.Publisher
   };
 
   try {
-    const updatedBook = await Book.findOneAndUpdate(
-      { BookID: bookId },
-      updateData,
-      { new: true, runValidators: true } 
-    );
+    const updatedBook = await Book.findOneAndUpdate({ BookID: bookId }, updateData, {
+      new: true,
+      runValidators: true
+    });
 
     if (!updatedBook) {
       return res.status(404).json({ error: 'Book not found' });
@@ -99,7 +98,7 @@ const updateBook = async (req, res) => {
 
     res.status(200).json({
       message: 'Book updated successfully',
-      book: updatedBook,
+      book: updatedBook
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -124,19 +123,17 @@ const deleteBook = async (req, res) => {
 
     res.status(200).json({
       message: 'Book deleted successfully',
-      book: deletedBook,
+      book: deletedBook
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
-
-
 module.exports = {
   getBooks,
   getBookById,
   createBook,
   updateBook,
-  deleteBook,
+  deleteBook
 };
