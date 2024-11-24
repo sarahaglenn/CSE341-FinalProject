@@ -106,6 +106,31 @@ const updateUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  // Validate userId
+  if (isNaN(userId)) {
+    return res.status(400).json({ error: 'Invalid userId. Must be a number.' });
+  }
+
+  try {
+    // Find and delete the user by UserID
+    const deletedUser = await User.findOneAndDelete({ UserID: userId });
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'User deleted successfully',
+      user: deletedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -114,4 +139,5 @@ module.exports = {
   // userLogin, // not yet implemented
   // userLogout
   updateUser,
+  deleteUser,
 };

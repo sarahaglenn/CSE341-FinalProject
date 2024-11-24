@@ -106,10 +106,37 @@ const updateBook = async (req, res) => {
   }
 };
 
+const deleteBook = async (req, res) => {
+  const bookId = parseInt(req.params.bookId, 10);
+
+  // Validate bookId
+  if (isNaN(bookId)) {
+    return res.status(400).json({ error: 'Invalid bookId. Must be a number.' });
+  }
+
+  try {
+    // Find and delete the book by BookID
+    const deletedBook = await Book.findOneAndDelete({ BookID: bookId });
+
+    if (!deletedBook) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+
+    res.status(200).json({
+      message: 'Book deleted successfully',
+      book: deletedBook,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
+
 
 module.exports = {
   getBooks,
   getBookById,
   createBook,
   updateBook,
+  deleteBook,
 };

@@ -13,4 +13,7 @@ router.post('/', booksController.createBook);
 // New PUT route to update a book
 router.put('/:bookId', booksController.updateBook);
 
+// New DELETE route to delete a book
+router.delete('/:bookId', booksController.deleteBook);
+
 module.exports = router;

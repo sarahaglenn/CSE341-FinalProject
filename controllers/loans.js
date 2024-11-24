@@ -102,9 +102,35 @@ const updateLoan = async (req, res) => {
   }
 };
 
+const deleteLoan = async (req, res) => {
+  const loanId = parseInt(req.params.loanId, 10);
+
+  // Validate loanId
+  if (isNaN(loanId)) {
+    return res.status(400).json({ error: 'Invalid loanId. Must be a number.' });
+  }
+
+  try {
+    // Find and delete the loan by loanID
+    const deletedLoan = await Loan.findOneAndDelete({ LoanID: loanId });
+
+    if (!deletedLoan) {
+      return res.status(404).json({ error: 'Loan not found' });
+    }
+
+    res.status(200).json({
+      message: 'Loan deleted successfully',
+      book: deletedLoan,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
 module.exports = {
   getLoans,
   getLoanById,
   createLoan,
   updateLoan,
+  deleteLoan,
 };

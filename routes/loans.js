@@ -13,4 +13,7 @@ router.post('/', loansController.createLoan);
 // New PUT route to update a loan
 router.put('/:loanId', loansController.updateLoan);
 
+// New DELETE route to delete a loan
+router.delete('/:loanId', loansController.deleteLoan);
+
 module.exports = router;
