@@ -93,10 +93,37 @@ const updateReservation = async (req, res) => {
   }
 };
 
+// Delete reservation
+const deleteReservation = async (req, res) => {
+  const reservationId = parseInt(req.params.reservationId, 10);
+
+  // Validate reservationId
+  if (isNaN(reservationId)) {
+    return res.status(400).json({ error: 'Invalid reservationId. Must be a number.' });
+  }
+
+  try {
+    // Find and delete the reservation by ReservationID
+    const deletedReservation = await Reservation.findOneAndDelete({ ReservationID: reservationId });
+
+    if (!deletedReservation) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    res.status(200).json({
+      message: 'Reservation deleted successfully',
+      reservation: deletedReservation,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
 
 module.exports = {
   getReservations,
   getReservationById,
   createReservation,
   updateReservation,
+  deleteReservation,
 };
