@@ -10,4 +10,7 @@ router.get('/:bookId', booksController.getBookById);
 
 router.post('/', booksController.createBook);
 
+// New PUT route to update a book
+router.put('/:bookId', booksController.updateBook);
+
 module.exports = router;

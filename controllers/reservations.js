@@ -59,8 +59,44 @@ const createReservation = async (req, res) => {
   }
 };
 
+const updateReservation = async (req, res) => {
+  const reservationId = parseInt(req.params.reservationId, 10); 
+
+  // Validate reservationId
+  if (isNaN(reservationId)) {
+    return res.status(400).json({ error: 'Invalid reservationId. Must be a number.' });
+  }
+
+  const updateData = {
+    UserID: req.body.UserID,
+    BookID: req.body.BookID,
+    ReservationDate: req.body.ReservationDate,
+  };
+
+  try {
+    const updatedReservation = await Reservation.findOneAndUpdate(
+      { ReservationID: reservationId }, 
+      updateData,
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedReservation) {
+      return res.status(404).json({ error: 'Reservation not found' });
+    }
+
+    res.status(200).json({
+      message: 'Reservation updated successfully',
+      reservation: updatedReservation,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
+
 module.exports = {
   getReservations,
   getReservationById,
-  createReservation
+  createReservation,
+  updateReservation,
 };

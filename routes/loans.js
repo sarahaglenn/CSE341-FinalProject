@@ -10,4 +10,7 @@ router.get('/:loanId', loansController.getLoanById);
 
 router.post('/', loansController.createLoan);
 
+// New PUT route to update a loan
+router.put('/:loanId', loansController.updateLoan);
+
 module.exports = router;

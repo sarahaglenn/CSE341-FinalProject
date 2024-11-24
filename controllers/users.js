@@ -71,11 +71,47 @@ const createUser = async (req, res) => {
 // const userLogin = async (req, res) => {}; // not yet implemented. Should these routes be in auth folder instead?
 // const userLogout = async (req, res) => {};
 
+const updateUser = async (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+
+  // Validate userId
+  if (isNaN(userId)) {
+    return res.status(400).json({ error: 'Invalid UserID. Must be a number.' });
+  }
+
+  const updateData = {
+    FirstName: req.body.FirstName,
+    LastName: req.body.LastName,
+    UserType: req.body.UserType,
+    MailingAddress: req.body.MailingAddress
+  };
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { UserID: userId }, 
+      updateData, 
+      { new: true, runValidators: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'User updated successfully',
+      user: updatedUser
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
   getUserByType,
-  createUser
+  createUser,
   // userLogin, // not yet implemented
   // userLogout
+  updateUser,
 };

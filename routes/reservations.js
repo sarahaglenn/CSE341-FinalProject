@@ -10,4 +10,7 @@ router.get('/:reservationId', reservationsController.getReservationById);
 
 router.post('/', reservationsController.createReservation);
 
+// New PUT route to update a loan
+router.put('/:reservationId', reservationsController.updateReservation);
+
 module.exports = router;
