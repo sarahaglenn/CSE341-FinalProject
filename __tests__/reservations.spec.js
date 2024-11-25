@@ -245,13 +245,6 @@ describe('Test DELETE /reservations/reservationId', () => {
       await Reservation.create(newReservation);
     }
   });
-
-  // afterEach(async () => {
-  //     const existingReservation = await Reservation.findOne({ ReservationID: newReservation.ReservationID });
-  //     if (!existingReservation) {
-  //         await Reservation.create(newReservation);
-  //     }
-  // });
   test('responds to DELETE /reservations/reservationId', async () => {
     const reservationId = 4;
     const res = await request.delete(`/reservations/${reservationId}`);
