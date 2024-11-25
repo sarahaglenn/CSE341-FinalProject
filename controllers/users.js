@@ -87,11 +87,10 @@ const updateUser = async (req, res) => {
   };
 
   try {
-    const updatedUser = await User.findOneAndUpdate(
-      { UserID: userId }, 
-      updateData, 
-      { new: true, runValidators: true } 
-    );
+    const updatedUser = await User.findOneAndUpdate({ UserID: userId }, updateData, {
+      new: true,
+      runValidators: true
+    });
 
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
@@ -124,7 +123,7 @@ const deleteUser = async (req, res) => {
 
     res.status(200).json({
       message: 'User deleted successfully',
-      user: deletedUser,
+      user: deletedUser
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -139,5 +138,5 @@ module.exports = {
   // userLogin, // not yet implemented
   // userLogout
   updateUser,
-  deleteUser,
+  deleteUser
 };

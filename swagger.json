@@ -572,6 +572,7 @@
               }
             }
           },
+          "400": "Bad Request - Invalid or missing parameters.",
           "500": {
             "description": "Internal Server Error"
           }
