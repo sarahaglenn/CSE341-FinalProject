@@ -60,7 +60,7 @@ const createReservation = async (req, res) => {
 };
 
 const updateReservation = async (req, res) => {
-  const reservationId = parseInt(req.params.reservationId, 10); 
+  const reservationId = parseInt(req.params.reservationId, 10);
 
   // Validate reservationId
   if (isNaN(reservationId)) {
@@ -70,14 +70,14 @@ const updateReservation = async (req, res) => {
   const updateData = {
     UserID: req.body.UserID,
     BookID: req.body.BookID,
-    ReservationDate: req.body.ReservationDate,
+    ReservationDate: req.body.ReservationDate
   };
 
   try {
     const updatedReservation = await Reservation.findOneAndUpdate(
-      { ReservationID: reservationId }, 
+      { ReservationID: reservationId },
       updateData,
-      { new: true, runValidators: true } 
+      { new: true, runValidators: true }
     );
 
     if (!updatedReservation) {
@@ -86,7 +86,7 @@ const updateReservation = async (req, res) => {
 
     res.status(200).json({
       message: 'Reservation updated successfully',
-      reservation: updatedReservation,
+      reservation: updatedReservation
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -112,18 +112,17 @@ const deleteReservation = async (req, res) => {
 
     res.status(200).json({
       message: 'Reservation deleted successfully',
-      reservation: deletedReservation,
+      reservation: deletedReservation
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
-
 module.exports = {
   getReservations,
   getReservationById,
   createReservation,
   updateReservation,
-  deleteReservation,
+  deleteReservation
 };

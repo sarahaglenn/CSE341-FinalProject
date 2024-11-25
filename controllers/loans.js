@@ -79,15 +79,14 @@ const updateLoan = async (req, res) => {
     UserID: req.body.UserID,
     BookID: req.body.BookID,
     DateOut: req.body.DateOut,
-    DueDate: req.body.DueDate,
+    DueDate: req.body.DueDate
   };
 
   try {
-    const updatedLoan = await Loan.findOneAndUpdate(
-      { LoanID: loanId }, 
-      updateData,
-      { new: true, runValidators: true } 
-    );
+    const updatedLoan = await Loan.findOneAndUpdate({ LoanID: loanId }, updateData, {
+      new: true,
+      runValidators: true
+    });
 
     if (!updatedLoan) {
       return res.status(404).json({ error: 'Loan not found' });
@@ -95,7 +94,7 @@ const updateLoan = async (req, res) => {
 
     res.status(200).json({
       message: 'Loan updated successfully',
-      loan: updatedLoan,
+      loan: updatedLoan
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -120,7 +119,7 @@ const deleteLoan = async (req, res) => {
 
     res.status(200).json({
       message: 'Loan deleted successfully',
-      book: deletedLoan,
+      loan: deletedLoan
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -132,5 +131,5 @@ module.exports = {
   getLoanById,
   createLoan,
   updateLoan,
-  deleteLoan,
+  deleteLoan
 };
