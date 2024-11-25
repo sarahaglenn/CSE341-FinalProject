@@ -49,13 +49,15 @@ const createReservation = async (req, res) => {
     ReservationDate: req.body.ReservationDate,
     UserID: req.body.UserID
   };
-
-  const result = await Reservation.create(reservation);
-
-  if (result._id != null) {
-    res.status(200).json(reservation);
-  } else {
-    res.status(500).json(res.error || 'Some error occurred while adding the reservation');
+  try {
+    const result = await Reservation.create(reservation);
+    res.status(200).json(result);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Some error occurred while adding the reservation' });
+    }
   }
 };
 

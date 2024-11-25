@@ -4,7 +4,7 @@
   "description": "bookwormapi- final project for cse341",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --watchAll --coverage",
     "start": "nodemon server.js",
     "swagger": "node swagger.js",
     "lint": "eslint .",
