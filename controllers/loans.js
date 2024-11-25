@@ -119,7 +119,7 @@ const deleteLoan = async (req, res) => {
 
     res.status(200).json({
       message: 'Loan deleted successfully',
-      book: deletedLoan
+      loan: deletedLoan
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
