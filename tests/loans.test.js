@@ -200,7 +200,7 @@ describe('Delete /loans/:loanId', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         message: 'Loan deleted successfully',
-        loan: mockLoan, // Ensure the key matches the controller response
+        loan: mockLoan, 
       });
     });
   
