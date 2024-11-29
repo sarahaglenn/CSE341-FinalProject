@@ -158,6 +158,7 @@ describe('Test POST /reservations', () => {
     });
   });
 });
+
 describe('Test PUT /reservations/reservationId', () => {
   const originalReservation = {
     ReservationID: 3,
@@ -230,6 +231,7 @@ describe('Test PUT /reservations/reservationId', () => {
     });
   });
 });
+
 describe('Test DELETE /reservations/reservationId', () => {
   const newReservation = {
     ReservationID: 4,
