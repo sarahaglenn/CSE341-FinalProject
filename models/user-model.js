@@ -9,21 +9,21 @@ const userSchema = new Schema(
       unique: true
     },
     FirstName: {
+      required: true,
       type: String,
-      default: null
     },
     LastName: {
+      required: true,
       type: String,
-      default: null
     },
     UserType: {
+      required: true,
       type: String,
-      default: 'patron',
       enum: ['patron', 'staff']
     },
     MailingAddress: {
+      required: true,
       type: String,
-      default: null
     }
   },
   {

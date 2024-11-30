@@ -2,12 +2,13 @@ const request = require('supertest');
 const express = require('express');
 const { getUsers, getUserById, getUserByType, createUser, updateUser, deleteUser} = require("../controllers/users");
 
-//Mock the Mongoose Book Model
+//Mock the Mongoose User Model
 jest.mock('../models/user-model', () => ({
     find: jest.fn(),
     findOne: jest.fn(),
     findOneAndUpdate: jest.fn(),
     findOneAndDelete: jest.fn(),
+    create: jest.fn(),
 }));
 
 const User = require ('../models/user-model');
@@ -30,15 +31,15 @@ appForUserByType.get('/users/type/:userType', getUserByType);
 
 //Set up for creating user
 const appForCreatingUser = express();
-appForCreatingUser.use(express.json);
-appForCreatingUser.put('/users', createUser);
+appForCreatingUser.use(express.json());
+appForCreatingUser.post('/users', createUser);
 
-//Set up for updating a book
+//Set up for updating a user
 const appForUpdatingUser = express();
-appForUpdatingUser.use(express.json);
+appForUpdatingUser.use(express.json());
 appForUpdatingUser.put('/users/:userId', updateUser);
 
-//Set up for deleting a book 
+//Set up for deleting a user 
 const appForDeletingUser = express();
 appForDeletingUser.use(express.json);
 appForDeletingUser.delete('/users/:userId', deleteUser);
@@ -89,7 +90,7 @@ describe('Get /users', () => {
     });
 });
 
-//Testing For retreiving a single user by ID
+//Testing For retrieving a single user by ID
 describe('GET /users/:userId', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -115,7 +116,7 @@ describe('GET /users/:userId', () => {
     // Test 400 invalid User ID
     test('should return 400 for an invalid UserID', async () =>{
         // Make request and assert response
-        const response = await request(appForUserById).get('/users/invalid-id');
+        const response = await request(appForUserById).get('/users/abc');
         expect(response.status).toBe(400);
         expect(response.body).toEqual({
             error: 'Invalid UserID. Must be a number.',
@@ -134,9 +135,9 @@ describe('GET /users/:userId', () => {
     });
     // Test 500 server error occurs
     test('should return 500 if server error occurs', async () => {
-        User.find.mockRejectedValue(new Error('Database Error'));
+        User.findOne.mockRejectedValue(new Error('Database Error'));
         // Make request and assert response
-        const response = await request(appForUsers).get('/users/1');
+        const response = await request(appForUserById).get('/users/1');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({
             error: 'Internal Server Error',
@@ -145,23 +146,168 @@ describe('GET /users/:userId', () => {
     });
 });
 
-// Testing for retreiving users by UserType='staff'
-// // Test 200
-// // Test 400 invalid usertype
-// // Test 404 no users with user type
-// // Test 500 server error occurs
+// Testing for retrieving users by UserType='staff'
+describe('GET /users/type/:userType', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    // Test 200
+    test('should return a list of users for a valid user type (staff)', async () => {
+        const mockUsers = [
+            { UserId: 1, FirstName: 'John', LastName: 'Doe', UserType: 'staff' },
+            { UserId: 2, FirstName: 'Jane', LastName: 'Smith', UserType: 'staff' },
+        ]
+        User.find.mockResolvedValue(mockUsers);
 
-// Testing for retreiving users by UserType='patron'
-// // Test 200
-// // Test 400 invalid usertype
-// // Test 404 no users with user type
-// // Test 500 server error occurs
+        const response = await request(appForUserByType).get('/users/type/staff');
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockUsers);
+    });
+
+    test('should return a list of users for a valid user type (patron)', async () => {
+        const mockUsers = [
+            { UserId: 1, FirstName: 'John', LastName: 'Doe', UserType: 'patron' },
+            { UserId: 2, FirstName: 'Jane', LastName: 'Smith', UserType: 'patron' },
+        ]
+        User.find.mockResolvedValue(mockUsers);
+
+        const response = await request(appForUserByType).get('/users/type/patron');
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockUsers);
+    });
+
+    // Test 400 invalid userType
+    test('should return 400 for an invalid user type', async () => {
+        const response = await request(appForUserByType).get('/users/type/librarian');
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({
+            error: 'Must use a valid user type to find a user.'
+        });
+    });
+
+    // Test 404 no users with user type
+    test('should return 404 for no users of specified type', async () => {
+        User.find.mockResolvedValue([]);
+
+        const response = await request(appForUserByType).get('/users/type/staff');
+        expect(response.status).toBe(404);
+        expect(response.body).toEqual({
+            error: 'No users exist with that user type.'
+        });
+    });
+
+    // Test 500 server error occurs
+    test('should return 500 if a server error occurs', async () => {
+        User.find.mockRejectedValue(new Error('Database Error'));
+
+        const response = await request(appForUserByType).get('/users/type/staff');
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            error: 'Internal Server Error',
+            detail: 'Database Error',
+        });
+    });
+})
 
 // Testing for POST creating a user
-// // Test 200
-// // Test 400 required fields are missing 
-// // Test 400 invalid data is provided
-// // Test 500 server error occurs
+describe('POST /users', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+    //Test 200
+    test('should create a new user', async () => {
+        // Mock Data
+        const mockUser = {
+            UserID: 1,
+            FirstName: "John",
+            LastName: "Doe",
+            UserType: "patron",
+            MailingAddress: "123 Main St"
+        };
+        User.create.mockResolvedValue(mockUser);
+        // Make Request and assert response
+        const response = await request(appForCreatingUser).post('/users').send(mockUser);
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockUser);
+    });
+    // Test 400 required fields are missing
+    test('should return 400 if required fields are missing', async () =>{
+        const incompleteUser = {
+            FirstName: 'Jane',
+            LastName: "Doe",
+            UserType: "patron",
+            MailingAddress: "123 Main St"
+        };
+        // Make Request and assert response
+        const response = await request(appForCreatingUser).post('/users').send(incompleteUser);
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({
+            error: 'Required fields are missing',
+        });
+    });
+    //Test 500
+    test('should return 500 if server error occurs', async () => {
+        User.create.mockRejectedValue(new Error('Database Error'));
+
+        const response = await request(appForCreatingUser).post('/users');
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            error: 'Internal Server Error',
+            detail: 'Database Error',
+        });
+    });
+});
+
+//Testing for deleting a user
+  describe('DELETE /users/:userId', () => {
+    test('should delete a user when a valid userId is provided', async () => {
+      const mockUser = {
+            UserID: 1,
+            FirstName: "John",
+            LastName: "Doe",
+            UserType: "patron",
+            MailingAddress: "123 Main St"
+        };
+  
+      User.findOneAndDelete.mockResolvedValue(mockUser);
+  
+      const response = await request(appForDeletingUser).delete('/users/1');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        message: 'User deleted successfully',
+        user: mockUser,
+      });
+    });
+  
+    test('should return 400 for an invalid userId', async () => {
+      const response = await request(appForDeletingUser).delete('/users/abc');
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid userId. Must be a number.',
+      });
+    });
+  
+    test('should return 404 if the user is not found', async () => {
+      User.findOneAndDelete.mockResolvedValue(null);
+  
+      const response = await request(appForDeletingUser).delete('/users/999');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        error: 'User not found',
+      });
+    });
+  
+    test('should return 500 if a server error occurs', async () => {
+      User.findOneAndDelete.mockRejectedValue(new Error('Database error'));
+  
+      const response = await request(appForDeletingUser).delete('/users/1');
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({
+        error: 'Internal Server Error',
+        detail: 'Database error',
+      });
+    });
+  });
 
 // // Testing for updating a User
 // describe('PUT /users/:userId', () => {
