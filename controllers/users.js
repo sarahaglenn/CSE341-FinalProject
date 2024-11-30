@@ -4,8 +4,12 @@ const User = require('../models/user-model');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(users);
+    if(users.length > 0){
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(users);
+    } else {
+      return res.status(404).json({ error: 'No users exist with those parameters.' });
+    }    
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }

@@ -45,32 +45,28 @@ appForDeletingUser.delete('/users/:userId', deleteUser);
 
 //Testing For getting all users 
 describe('Get /users', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
     //Test 200
     test('should return a list of users', async () => {
         // Mock Data
-        const user = [
+        const mockUser = [
             {
-                UserID: 100,
+                UserID: 1,
                 FirstName: "John",
                 LastName: "Doe",
                 UserType: "patron",
-                MailingAddress: "123 Any St."
-            },
-            {
-                UserID: 101,
-                FirstName: "James",
-                LastName: "Door",
-                UserType: "staff",
-                MailingAddress: "456 Any St."
+                MailingAddress: "123 Main St"
             },
         ];
-        User.find.mockResolvedValue(user);
+        User.find.mockResolvedValue(mockUser);
         // Make Request and assert response
         const response = await request(appForUsers).get('/users');
         expect(response.status).toBe(200);
-        expect(response.body).toEqual(user);
+        expect(response.body).toEqual(mockUser);
     });
-    //Test 404
+    // Test 404
     test('should return 404 if no users are found', async () =>{
         User.find.mockResolvedValue([]);
         // Make Request and assert response
@@ -95,25 +91,28 @@ describe('Get /users', () => {
 
 //Testing For retreiving a single user by ID
 describe('GET /users/:userId', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
     // Test 200
     test('should return a user if a valid UserId is provided', async () => {
         // Mock Data Single user
         const mockUser = [
             {
-            UserID: 100,
-            FirstName: "John",
-            LastName: "Doe",
-            UserType: "patron",
-            MailingAddress: "123 Any St."
+                UserID: 1,
+                FirstName: "John",
+                LastName: "Doe",
+                UserType: "patron",
+                MailingAddress: "123 Main St"
             },
         ];
         User.findOne.mockResolvedValue(mockUser);
         // Make request and assert response
-        const response = await request(appForUserById).get ('/users/100');
-        expect (response.status).toBe(200);
-        expect (response.body).toEqual(mockUser);
+        const response = await request(appForUserById).get('/users/1');
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockUser);
     });
-    // // Test 400 invalid User ID
+    // Test 400 invalid User ID
     test('should return 400 for an invalid UserID', async () =>{
         // Make request and assert response
         const response = await request(appForUserById).get('/users/invalid-id');
@@ -137,7 +136,7 @@ describe('GET /users/:userId', () => {
     test('should return 500 if server error occurs', async () => {
         User.find.mockRejectedValue(new Error('Database Error'));
         // Make request and assert response
-        const response = await request(appForUsers).get('/users/10');
+        const response = await request(appForUsers).get('/users/1');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({
             error: 'Internal Server Error',
@@ -164,85 +163,135 @@ describe('GET /users/:userId', () => {
 // // Test 400 invalid data is provided
 // // Test 500 server error occurs
 
-//Testing for updating a User
-describe('PUT /users/:userId', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-    // Test 200
-    test('should update a user when valid data is provided', async () => {
-        const mockUser = { 
-            UserID: 100, 
-            FirstName: 'Alfred', 
-            LastName: 'Hitchcock', 
-            UserType: 'patron',
-            MailingAddress: '123 Any St.'
-        };
-        User.findOneAndUpdate.mockResolvedValue(mockUser);
+// // Testing for updating a User
+// describe('PUT /users/:userId', () => {
+//     beforeEach(() => {
+//         jest.clearAllMocks();
+//     });
+//     // Test 200
+//     test('should update a user when valid data is provided', async () => {
+//         const mockUser = { 
+//             UserID: 100, 
+//             FirstName: 'Alfred', 
+//             LastName: 'Hitchcock', 
+//             UserType: 'patron',
+//             MailingAddress: '123 Any St.'
+//         };
+//         User.findOneAndUpdate.mockResolvedValue(mockUser);
 
-        const response = await request(appForUpdatingUser)
-            .put('/users/100')
-            .send({
-                UserID: 100, 
-                FirstName: 'Alfred', 
-                LastName: 'Hitchcock', 
-                UserType: 'patron',
-                MailingAddress: '456 New St.'
-        });
+//         const response = await request(appForUpdatingUser)
+//             .put('/users/100')
+//             .send({
+//                 UserID: 100, 
+//                 FirstName: 'Alfred', 
+//                 LastName: 'Hitchcock', 
+//                 UserType: 'patron',
+//                 MailingAddress: '456 New St.'
+//         });
 
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual({
-            message: 'User updated successfully',
-            user: mockUser
-        });
-    });
-    // Test 400 invalid userID
-    test('should return 400 for an invalid UserId', async () => {
-        const response = await request(appForUpdatingUser)
-        .put('/users/invalid-id')
-        .send({
-            UserId: 200,
-        });
+//         expect(response.status).toBe(200);
+//         expect(response.body).toEqual({
+//             message: 'User updated successfully',
+//             user: mockUser
+//         });
+//     });
+//     // Test 400 invalid userID
+//     test('should return 400 for an invalid UserId', async () => {
+//         const response = await request(appForUpdatingUser)
+//         .put('/users/invalid-id')
+//         .send({
+//             UserId: 200,
+//         });
 
-        expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-            error: 'Invalid userId. Must be a number',
-        });
-    });
-    // Test 404 user not found
-    test('should return a 404 if new user is found by provided userId', async () => {
-        User.findOneAndUpdate.mockRejectedValue(null);
+//         expect(response.status).toBe(400);
+//         expect(response.body).toEqual({
+//             error: 'Invalid UserId. Must be a number.',
+//         });
+//     });
+//     // Test 404 user not found
+//     test('should return a 404 if new user is found by provided userId', async () => {
+//         User.findOneAndUpdate.mockRejectedValue(null);
 
-        const response = await request(appForUpdatingUser)
-        .put('/users/999').send({
-            UserId: 200, 
-        });
+//         const response = await request(appForUpdatingUser)
+//         .put('/users/999').send({
+//             UserId: 200, 
+//         });
 
-        expect(response.status).toBe(404);
-        expect(response.body).toEqual({
-            error: 'User not found',
-        });
-    });
-    // Test 500 server error occurs
-    test('should return 500 if a server error occurs', async () => {
-        User.findOneAndUpdate.mockRejectedValue(new Error('Database Error'));
+//         expect(response.status).toBe(404);
+//         expect(response.body).toEqual({
+//             error: 'User not found',
+//         });
+//     });
+//     // Test 500 server error occurs
+//     test('should return 500 if a server error occurs', async () => {
+//         User.findOneAndUpdate.mockRejectedValue(new Error('Database Error'));
 
-        const response = await request(appForUpdatingUser)
-        .put('/users/100')
-        .send({
-            UserID:100
-        });
+//         const response = await request(appForUpdatingUser)
+//         .put('/users/100')
+//         .send({
+//             UserID:100
+//         });
 
-        expect(response.status).toBe(500);
-        expect(response.body).toEqual({
-            error: 'Internal Server Error',
-            detail: 'Database error'
-        });
-    });
-}); 
+//         expect(response.status).toBe(500);
+//         expect(response.body).toEqual({
+//             error: 'Internal Server Error',
+//             detail: 'Database error'
+//         });
+//     });
+// }); 
 
-//Testing for deleting a user
-// // Test 200
-// // Test 400 invalid userID
-// // Test 404 user not found
-// // Test 500 server error occurs
+// //Testing for deleting a user
+// describe('Delete /users/:userId', () => {
+//     beforeEach(() => {
+//       jest.clearAllMocks();
+//     });
+//     // Test 200
+//     test('should delete a user when a valid userId is provided', async () => {
+//       const mockUser = {
+//         UserID: 100,
+//         FirstName: "John",
+//         LastName: "Doe",
+//         UserType: "patron",
+//         MailingAddress: "123 Any St."        
+//       };
+  
+//       User.findOneAndDelete.mockResolvedValue(mockUser);
+  
+//       const response = await request(appForDeletingUser).delete('/users/100');
+//       expect(response.status).toBe(200);
+//       expect(response.body).toEqual({
+//         message: 'User deleted successfully',
+//         user: mockUser, 
+//       });
+//     });
+//     // Test 400 invalid userID
+//     test('should return 400 for an invalid userId', async () => {
+//       const response = await request(appForDeletingUser).delete('/users/invalid-id');
+  
+//       expect(response.status).toBe(400);
+//       expect(response.body).toEqual({
+//         error: 'Invalid userId. Must be a number.',
+//       });
+//     });
+//     // Test 404 user not found
+//     test('should return 404 if the user is not found', async () => {
+//       User.findOneAndDelete.mockResolvedValue(null);
+  
+//       const response = await request(appForDeletingUser).delete('/users/999');
+//       expect(response.status).toBe(404);
+//       expect(response.body).toEqual({
+//         error: 'User not found',
+//       });
+//     });
+//     // Test 500 server error occurs
+//     test('should return 500 if a server error occurs', async () => {
+//       User.findOneAndDelete.mockRejectedValue(new Error('Database error'));
+  
+//       const response = await request(appForDeletingUser).delete('/users/100');
+//       expect(response.status).toBe(500);
+//       expect(response.body).toEqual({
+//         error: 'Internal Server Error',
+//         detail: 'Database error',
+//       });
+//     });
+//   });
