@@ -4,8 +4,12 @@ const User = require('../models/user-model');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(users);
+    if(users.length > 0){
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(users);
+    } else {
+      return res.status(404).json({ error: 'No users exist with those parameters.' });
+    }    
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
@@ -20,9 +24,9 @@ const getUserById = async (req, res) => {
   }
 
   try {
-    const user = await User.find({ UserID: userId });
-    if (user.length > 0) {
-      res.status(200).json(user[0]);
+    const user = await User.findOne({ UserID: userId });
+    if (user) {
+      res.status(200).json(user);
     } else {
       res.status(404).json({ error: 'No user exists with that id' });
     }
@@ -58,16 +62,17 @@ const createUser = async (req, res) => {
     MailingAddress: req.body.MailingAddress
   };
 
-  const result = await User.create(user);
-  console.log(result);
-
-  if (result._id != null) {
-    res.status(200).json(user);
-  } else {
-    res.status(500).json(res.error || 'Some error occurred while adding the user');
+  try {
+    const newUser = await User.create(user);
+    res.status(200).json(newUser);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Internal Server Error', detail: error.message  })
+    }
   }
-};
-
+}
 // const userLogin = async (req, res) => {}; // not yet implemented. Should these routes be in auth folder instead?
 // const userLogout = async (req, res) => {};
 
