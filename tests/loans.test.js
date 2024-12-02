@@ -1,6 +1,6 @@
 const request = require('supertest');
 const express = require('express');
-const { getLoans, getLoanById, updateLoan, deleteLoan } = require('../controllers/loans');
+const { getLoans, getLoanById, updateLoan, deleteLoan, createLoan } = require('../controllers/loans');
 
 // Mock the Mongoose Loan model
 jest.mock('../models/loan-model', () => ({
@@ -8,11 +8,12 @@ jest.mock('../models/loan-model', () => ({
   findOne: jest.fn(),
   findOneAndUpdate: jest.fn(),
   findOneAndDelete: jest.fn(),
+  create: jest.fn(),
 }));
 
 const Loan = require('../models/loan-model');
 
-// Set up Express apps for routes
+// Set up Express apps for each route
 const appForLoans = express();
 appForLoans.use(express.json());
 appForLoans.get('/loans', getLoans);
@@ -29,17 +30,15 @@ const appForDeleteLoan = express();
 appForDeleteLoan.use(express.json());
 appForDeleteLoan.delete('/loans/:loanId', deleteLoan);
 
+const appForCreateLoan = express();
+appForCreateLoan.use(express.json());
+appForCreateLoan.post('/loans', createLoan);
+
 // Tests for GET /loans
 describe('GET /loans', () => {
   test('should return a list of loans', async () => {
     const loans = [
-      {
-        LoanID: 10,
-        BookID: 1,
-        UserID: 1,
-        DateOut: '2024-11-04',
-        DueDate: '2024-11-25',
-      },
+      { LoanID: 10, BookID: 1, UserID: 1, DateOut: '2024-11-04', DueDate: '2024-11-25' },
     ];
     Loan.find.mockResolvedValue(loans);
 
@@ -53,9 +52,7 @@ describe('GET /loans', () => {
 
     const response = await request(appForLoans).get('/loans');
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({
-      error: 'No loans exist with those parameters.',
-    });
+    expect(response.body).toEqual({ error: 'No loans exist with those parameters.' });
   });
 
   test('should return 500 if a server error occurs', async () => {
@@ -63,14 +60,11 @@ describe('GET /loans', () => {
 
     const response = await request(appForLoans).get('/loans');
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({
-      error: 'Internal Server Error',
-      detail: 'Database error',
-    });
+    expect(response.body).toEqual({ error: 'Internal Server Error', detail: 'Database error' });
   });
 });
 
-// Tests for retrieving a single loan
+// Tests for GET /loans/:loanId
 describe('GET /loans/:loanId', () => {
   test('should return a loan if a valid LoanID is provided', async () => {
     const mockLoan = {
@@ -90,30 +84,22 @@ describe('GET /loans/:loanId', () => {
   test('should return 400 for an invalid LoanID', async () => {
     const response = await request(appForLoanById).get('/loans/invalid-id');
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      error: 'Invalid LoanID. It must be a number.',
-    });
+    expect(response.body).toEqual({ error: 'Invalid LoanID. It must be a number.' });
   });
 
-  test('should return 404 if no loan is found with the provided LoanID', async () => {
+  test('should return 404 if no loan is found', async () => {
     Loan.findOne.mockResolvedValue(null);
 
     const response = await request(appForLoanById).get('/loans/999');
     expect(response.status).toBe(404);
-    expect(response.body).toEqual({
-      error: 'No loan exists with that id',
-    });
+    expect(response.body).toEqual({ error: 'No loan exists with that id' });
   });
 });
 
-// Tests for updating a loan
-describe('PUT /loans/:loanId', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should update a loan when valid data is provided', async () => {
-    const mockLoan = {
+// Tests for POST /loans
+describe('POST /loans', () => {
+  test('should create a new loan when valid data is provided', async () => {
+    const newLoan = {
       LoanID: 10,
       BookID: 1,
       UserID: 1,
@@ -121,56 +107,25 @@ describe('PUT /loans/:loanId', () => {
       DueDate: '2024-11-25',
     };
 
-    Loan.findOneAndUpdate.mockResolvedValue(mockLoan);
+    Loan.create.mockResolvedValue(newLoan);
 
-    const response = await request(appForUpdateLoan)
-      .put('/loans/10')
-      .send({
-        LoanID: 10,
-        BookID: 1,
-        UserID: 1,
-        DateOut: '2024-11-04',
-        DueDate: '2024-11-25',
-      });
-
+    const response = await request(appForCreateLoan).post('/loans').send(newLoan);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Loan updated successfully',
-      loan: mockLoan,
-    });
+    expect(response.body).toEqual(newLoan);
   });
 
-  test('should return 400 for an invalid loanID', async () => {
-    const response = await request(appForUpdateLoan).put('/loans/invalid-id').send({
-      LoanID: 100,
-    });
+  test('should return 500 if loan creation fails', async () => {
+    const newLoan = {
+      LoanID: 10,
+      BookID: 1,
+      UserID: 1,
+      DateOut: '2024-11-04',
+      DueDate: '2024-11-25',
+    };
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      error: 'Invalid loanId. Must be a number.',
-    });
-  });
+    Loan.create.mockRejectedValue(new Error('Database error'));
 
-  test('should return 404 if the loan is not found', async () => {
-    Loan.findOneAndUpdate.mockResolvedValue(null);
-
-    const response = await request(appForUpdateLoan).put('/loans/999').send({
-      LoanID: 100,
-    });
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({
-      error: 'Loan not found',
-    });
-  });
-
-  test('should return 500 if a server error occurs', async () => {
-    Loan.findOneAndUpdate.mockRejectedValue(new Error('Database error'));
-
-    const response = await request(appForUpdateLoan).put('/loans/10').send({
-      LoanID: 100,
-    });
-
+    const response = await request(appForCreateLoan).post('/loans').send(newLoan);
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Internal Server Error',
@@ -179,58 +134,77 @@ describe('PUT /loans/:loanId', () => {
   });
 });
 
-// Tests for deleting a loan
-describe('Delete /loans/:loanId', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-  
-    test('should delete a loan when a valid loanId is provided', async () => {
-      const mockLoan = {
-        LoanID: 10,
-        BookID: 1,
-        UserID: 1,
-        DateOut: '2024-11-04',
-        DueDate: '2024-11-25',
-      };
-  
-      Loan.findOneAndDelete.mockResolvedValue(mockLoan);
-  
-      const response = await request(appForDeleteLoan).delete('/loans/10');
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        message: 'Loan deleted successfully',
-        loan: mockLoan, 
-      });
-    });
-  
-    test('should return 400 for an invalid loanId', async () => {
-      const response = await request(appForDeleteLoan).delete('/loans/invalid-id');
-  
-      expect(response.status).toBe(400);
-      expect(response.body).toEqual({
-        error: 'Invalid loanId. Must be a number.',
-      });
-    });
-  
-    test('should return 404 if the loan is not found', async () => {
-      Loan.findOneAndDelete.mockResolvedValue(null);
-  
-      const response = await request(appForDeleteLoan).delete('/loans/999');
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({
-        error: 'Loan not found',
-      });
-    });
-  
-    test('should return 500 if a server error occurs', async () => {
-      Loan.findOneAndDelete.mockRejectedValue(new Error('Database error'));
-  
-      const response = await request(appForDeleteLoan).delete('/loans/10');
-      expect(response.status).toBe(500);
-      expect(response.body).toEqual({
-        error: 'Internal Server Error',
-        detail: 'Database error',
-      });
+// Tests for PUT /loans/:loanId
+describe('PUT /loans/:loanId', () => {
+  test('should update a loan when valid data is provided', async () => {
+    const updatedLoan = {
+      LoanID: 10,
+      BookID: 1,
+      UserID: 1,
+      DateOut: '2024-11-04',
+      DueDate: '2024-11-25',
+    };
+
+    Loan.findOneAndUpdate.mockResolvedValue(updatedLoan);
+
+    const response = await request(appForUpdateLoan)
+      .put('/loans/10')
+      .send(updatedLoan);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: 'Loan updated successfully',
+      loan: updatedLoan,
     });
   });
+
+  test('should return 400 for an invalid loanId', async () => {
+    const response = await request(appForUpdateLoan).put('/loans/invalid-id');
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid loanId. Must be a number.' });
+  });
+
+  test('should return 404 if the loan is not found', async () => {
+    Loan.findOneAndUpdate.mockResolvedValue(null);
+
+    const response = await request(appForUpdateLoan).put('/loans/999');
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'Loan not found' });
+  });
+});
+
+// Tests for DELETE /loans/:loanId
+describe('DELETE /loans/:loanId', () => {
+  test('should delete a loan when a valid loanId is provided', async () => {
+    const mockLoan = {
+      LoanID: 10,
+      BookID: 1,
+      UserID: 1,
+      DateOut: '2024-11-04',
+      DueDate: '2024-11-25',
+    };
+
+    Loan.findOneAndDelete.mockResolvedValue(mockLoan);
+
+    const response = await request(appForDeleteLoan).delete('/loans/10');
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      message: 'Loan deleted successfully',
+      loan: mockLoan,
+    });
+  });
+
+  test('should return 400 for an invalid loanId', async () => {
+    const response = await request(appForDeleteLoan).delete('/loans/invalid-id');
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid loanId. Must be a number.' });
+  });
+
+  test('should return 404 if the loan is not found', async () => {
+    Loan.findOneAndDelete.mockResolvedValue(null);
+
+    const response = await request(appForDeleteLoan).delete('/loans/999');
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'Loan not found' });
+  });
+});

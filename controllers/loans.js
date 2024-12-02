@@ -55,22 +55,21 @@ const createLoan = async (req, res) => {
     BookID: req.body.BookID,
     DateOut: req.body.DateOut,
     DueDate: req.body.DueDate,
-    UserID: req.body.UserID
+    UserID: req.body.UserID,
   };
 
-  const result = await Loan.create(loan);
-
-  if (result._id != null) {
-    res.status(200).json(loan);
-  } else {
-    res.status(500).json(res.error || 'Some error occurred while adding the loan');
+  try {
+    const result = await Loan.create(loan);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error creating loan:', error.message);
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const updateLoan = async (req, res) => {
   const loanId = parseInt(req.params.loanId, 10);
 
-  // Validate loanId
   if (isNaN(loanId)) {
     return res.status(400).json({ error: 'Invalid loanId. Must be a number.' });
   }
@@ -79,13 +78,13 @@ const updateLoan = async (req, res) => {
     UserID: req.body.UserID,
     BookID: req.body.BookID,
     DateOut: req.body.DateOut,
-    DueDate: req.body.DueDate
+    DueDate: req.body.DueDate,
   };
 
   try {
     const updatedLoan = await Loan.findOneAndUpdate({ LoanID: loanId }, updateData, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
 
     if (!updatedLoan) {
@@ -94,7 +93,7 @@ const updateLoan = async (req, res) => {
 
     res.status(200).json({
       message: 'Loan updated successfully',
-      loan: updatedLoan
+      loan: updatedLoan,
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -104,13 +103,11 @@ const updateLoan = async (req, res) => {
 const deleteLoan = async (req, res) => {
   const loanId = parseInt(req.params.loanId, 10);
 
-  // Validate loanId
   if (isNaN(loanId)) {
     return res.status(400).json({ error: 'Invalid loanId. Must be a number.' });
   }
 
   try {
-    // Find and delete the loan by loanID
     const deletedLoan = await Loan.findOneAndDelete({ LoanID: loanId });
 
     if (!deletedLoan) {
@@ -119,7 +116,7 @@ const deleteLoan = async (req, res) => {
 
     res.status(200).json({
       message: 'Loan deleted successfully',
-      loan: deletedLoan
+      loan: deletedLoan,
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -131,5 +128,5 @@ module.exports = {
   getLoanById,
   createLoan,
   updateLoan,
-  deleteLoan
+  deleteLoan,
 };
