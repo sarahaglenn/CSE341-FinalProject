@@ -1,6 +1,12 @@
 const request = require('supertest');
 const express = require('express');
-const { getBooks, getBookById, updateBook, deleteBook, createBook } = require('../controllers/books');
+const {
+  getBooks,
+  getBookById,
+  updateBook,
+  deleteBook,
+  createBook
+} = require('../controllers/books');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -13,7 +19,7 @@ jest.mock('../models/book-model', () => ({
   findOne: jest.fn(),
   findOneAndUpdate: jest.fn(),
   findOneAndDelete: jest.fn(),
-  create: jest.fn(),
+  create: jest.fn()
 }));
 
 const Book = require('../models/book-model');
@@ -44,7 +50,7 @@ describe('GET /books', () => {
   test('should return a list of books', async () => {
     const books = [
       { BookID: 1, Title: 'Book 1', Availability: true },
-      { BookID: 2, Title: 'Book 2', Availability: false },
+      { BookID: 2, Title: 'Book 2', Availability: false }
     ];
     Book.find.mockResolvedValue(books);
 
@@ -59,7 +65,7 @@ describe('GET /books', () => {
     const response = await request(appForBooks).get('/books');
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
-      error: 'No books exist matching the given query parameters.',
+      error: 'No books exist matching the given query parameters.'
     });
   });
 
@@ -67,7 +73,7 @@ describe('GET /books', () => {
     const response = await request(appForBooks).get('/books?Availability=invalid');
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
-      error: 'Invalid value for Availability. Use "true" or "false".',
+      error: 'Invalid value for Availability. Use "true" or "false".'
     });
   });
 });
@@ -87,7 +93,7 @@ describe('GET /books/:bookId', () => {
     const response = await request(appForBookById).get('/books/invalid-id');
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
-      error: 'Invalid BookID. Must be a number.',
+      error: 'Invalid BookID. Must be a number.'
     });
   });
 
@@ -97,7 +103,7 @@ describe('GET /books/:bookId', () => {
     const response = await request(appForBookById).get('/books/999');
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
-      error: 'No book exists with that id',
+      error: 'No book exists with that id'
     });
   });
 
@@ -108,7 +114,7 @@ describe('GET /books/:bookId', () => {
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Internal Server Error',
-      detail: 'Database error',
+      detail: 'Database error'
     });
   });
 });
@@ -124,7 +130,7 @@ describe('PUT /books/:bookId', () => {
       Genre: 'Fiction',
       PublicationYear: 2023,
       Availability: true,
-      Publisher: 'Updated Publisher',
+      Publisher: 'Updated Publisher'
     };
 
     Book.findOneAndUpdate.mockResolvedValue(mockBook);
@@ -136,24 +142,24 @@ describe('PUT /books/:bookId', () => {
       Genre: 'Fiction',
       PublicationYear: 2023,
       Availability: true,
-      Publisher: 'Updated Publisher',
+      Publisher: 'Updated Publisher'
     });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       message: 'Book updated successfully',
-      book: mockBook,
+      book: mockBook
     });
   });
 
   test('should return 400 for an invalid bookId', async () => {
     const response = await request(appForUpdateBook).put('/books/invalid-id').send({
-      Title: 'Updated Book',
+      Title: 'Updated Book'
     });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
-      error: 'Invalid bookId. Must be a number.',
+      error: 'Invalid bookId. Must be a number.'
     });
   });
 
@@ -161,12 +167,12 @@ describe('PUT /books/:bookId', () => {
     Book.findOneAndUpdate.mockResolvedValue(null);
 
     const response = await request(appForUpdateBook).put('/books/999').send({
-      Title: 'Updated Book',
+      Title: 'Updated Book'
     });
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
-      error: 'Book not found',
+      error: 'Book not found'
     });
   });
 
@@ -174,13 +180,13 @@ describe('PUT /books/:bookId', () => {
     Book.findOneAndUpdate.mockRejectedValue(new Error('Database error'));
 
     const response = await request(appForUpdateBook).put('/books/1').send({
-      Title: 'Updated Book',
+      Title: 'Updated Book'
     });
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Internal Server Error',
-      detail: 'Database error',
+      detail: 'Database error'
     });
   });
 });
@@ -191,7 +197,7 @@ describe('DELETE /books/:bookId', () => {
     const mockBook = {
       BookID: 1,
       Title: 'Book 1',
-      Author: 'Author 1',
+      Author: 'Author 1'
     };
 
     Book.findOneAndDelete.mockResolvedValue(mockBook);
@@ -200,7 +206,7 @@ describe('DELETE /books/:bookId', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       message: 'Book deleted successfully',
-      book: mockBook,
+      book: mockBook
     });
   });
 
@@ -208,7 +214,7 @@ describe('DELETE /books/:bookId', () => {
     const response = await request(appForDeleteBook).delete('/books/invalid-id');
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
-      error: 'Invalid bookId. Must be a number.',
+      error: 'Invalid bookId. Must be a number.'
     });
   });
 
@@ -218,7 +224,7 @@ describe('DELETE /books/:bookId', () => {
     const response = await request(appForDeleteBook).delete('/books/999');
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
-      error: 'Book not found',
+      error: 'Book not found'
     });
   });
 
@@ -229,7 +235,7 @@ describe('DELETE /books/:bookId', () => {
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Internal Server Error',
-      detail: 'Database error',
+      detail: 'Database error'
     });
   });
 });
@@ -245,7 +251,7 @@ describe('POST /books', () => {
       Genre: 'Fiction',
       PublicationYear: 2023,
       Availability: true,
-      Publisher: 'Test Publisher',
+      Publisher: 'Test Publisher'
     };
 
     Book.create.mockResolvedValue(newBook);
@@ -265,7 +271,7 @@ describe('POST /books', () => {
       Genre: 'Fiction',
       PublicationYear: 2023,
       Availability: true,
-      Publisher: 'Test Publisher',
+      Publisher: 'Test Publisher'
     };
 
     Book.create.mockRejectedValue(new Error('Database error'));
@@ -275,7 +281,7 @@ describe('POST /books', () => {
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Some error occurred while adding the book',
-      detail: 'Database error',
+      detail: 'Database error'
     });
   });
 });

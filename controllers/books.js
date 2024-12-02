@@ -50,7 +50,15 @@ const createBook = async (req, res) => {
   const { BookID, Title, Author, ISBN, Genre, PublicationYear, Availability, Publisher } = req.body;
 
   // Validate required fields
-  if (!BookID || !Title || !Author || !ISBN || !PublicationYear || Availability === undefined || !Publisher) {
+  if (
+    !BookID ||
+    !Title ||
+    !Author ||
+    !ISBN ||
+    !PublicationYear ||
+    Availability === undefined ||
+    !Publisher
+  ) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -60,8 +68,10 @@ const createBook = async (req, res) => {
     const result = await Book.create(book);
     res.status(200).json(result);
   } catch (error) {
-    console.error('Error creating book:', error.message);
-    res.status(500).json({ error: 'Some error occurred while adding the book', detail: error.message });
+    // console.error('Error creating book:', error.message);
+    res
+      .status(500)
+      .json({ error: 'Some error occurred while adding the book', detail: error.message });
   }
 };
 
@@ -79,13 +89,13 @@ const updateBook = async (req, res) => {
     Genre: req.body.Genre,
     PublicationYear: req.body.PublicationYear,
     Availability: req.body.Availability,
-    Publisher: req.body.Publisher,
+    Publisher: req.body.Publisher
   };
 
   try {
     const updatedBook = await Book.findOneAndUpdate({ BookID: bookId }, updateData, {
       new: true,
-      runValidators: true,
+      runValidators: true
     });
 
     if (!updatedBook) {
@@ -94,7 +104,7 @@ const updateBook = async (req, res) => {
 
     res.status(200).json({
       message: 'Book updated successfully',
-      book: updatedBook,
+      book: updatedBook
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -117,7 +127,7 @@ const deleteBook = async (req, res) => {
 
     res.status(200).json({
       message: 'Book deleted successfully',
-      book: deletedBook,
+      book: deletedBook
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -129,5 +139,5 @@ module.exports = {
   getBookById,
   createBook,
   updateBook,
-  deleteBook,
+  deleteBook
 };
