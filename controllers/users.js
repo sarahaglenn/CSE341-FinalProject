@@ -4,12 +4,12 @@ const User = require('../models/user-model');
 const getUsers = async (req, res) => {
   try {
     const users = await User.find();
-    if(users.length > 0){
+    if (users.length > 0) {
       res.setHeader('Content-Type', 'application/json');
       res.status(200).json(users);
     } else {
       return res.status(404).json({ error: 'No users exist with those parameters.' });
-    }    
+    }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
@@ -69,10 +69,10 @@ const createUser = async (req, res) => {
     if (error.name === 'ValidationError') {
       res.status(400).json({ error: error.message });
     } else {
-      res.status(500).json({ error: 'Internal Server Error', detail: error.message  })
+      res.status(500).json({ error: 'Internal Server Error', detail: error.message });
     }
   }
-}
+};
 // const userLogin = async (req, res) => {}; // not yet implemented. Should these routes be in auth folder instead?
 // const userLogout = async (req, res) => {};
 

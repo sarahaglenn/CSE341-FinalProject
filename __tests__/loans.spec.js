@@ -1,6 +1,12 @@
 const request = require('supertest');
 const express = require('express');
-const { getLoans, getLoanById, updateLoan, deleteLoan, createLoan } = require('../controllers/loans');
+const {
+  getLoans,
+  getLoanById,
+  updateLoan,
+  deleteLoan,
+  createLoan
+} = require('../controllers/loans');
 
 // Mock the Mongoose Loan model
 jest.mock('../models/loan-model', () => ({
@@ -8,7 +14,7 @@ jest.mock('../models/loan-model', () => ({
   findOne: jest.fn(),
   findOneAndUpdate: jest.fn(),
   findOneAndDelete: jest.fn(),
-  create: jest.fn(),
+  create: jest.fn()
 }));
 
 const Loan = require('../models/loan-model');
@@ -38,7 +44,7 @@ appForCreateLoan.post('/loans', createLoan);
 describe('GET /loans', () => {
   test('should return a list of loans', async () => {
     const loans = [
-      { LoanID: 10, BookID: 1, UserID: 1, DateOut: '2024-11-04', DueDate: '2024-11-25' },
+      { LoanID: 10, BookID: 1, UserID: 1, DateOut: '2024-11-04', DueDate: '2024-11-25' }
     ];
     Loan.find.mockResolvedValue(loans);
 
@@ -72,7 +78,7 @@ describe('GET /loans/:loanId', () => {
       BookID: 1,
       UserID: 1,
       DateOut: '2024-11-04',
-      DueDate: '2024-11-25',
+      DueDate: '2024-11-25'
     };
     Loan.findOne.mockResolvedValue(mockLoan);
 
@@ -104,7 +110,7 @@ describe('POST /loans', () => {
       BookID: 1,
       UserID: 1,
       DateOut: '2024-11-04',
-      DueDate: '2024-11-25',
+      DueDate: '2024-11-25'
     };
 
     Loan.create.mockResolvedValue(newLoan);
@@ -120,7 +126,7 @@ describe('POST /loans', () => {
       BookID: 1,
       UserID: 1,
       DateOut: '2024-11-04',
-      DueDate: '2024-11-25',
+      DueDate: '2024-11-25'
     };
 
     Loan.create.mockRejectedValue(new Error('Database error'));
@@ -129,7 +135,7 @@ describe('POST /loans', () => {
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
       error: 'Internal Server Error',
-      detail: 'Database error',
+      detail: 'Database error'
     });
   });
 });
@@ -142,19 +148,17 @@ describe('PUT /loans/:loanId', () => {
       BookID: 1,
       UserID: 1,
       DateOut: '2024-11-04',
-      DueDate: '2024-11-25',
+      DueDate: '2024-11-25'
     };
 
     Loan.findOneAndUpdate.mockResolvedValue(updatedLoan);
 
-    const response = await request(appForUpdateLoan)
-      .put('/loans/10')
-      .send(updatedLoan);
+    const response = await request(appForUpdateLoan).put('/loans/10').send(updatedLoan);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       message: 'Loan updated successfully',
-      loan: updatedLoan,
+      loan: updatedLoan
     });
   });
 
@@ -181,7 +185,7 @@ describe('DELETE /loans/:loanId', () => {
       BookID: 1,
       UserID: 1,
       DateOut: '2024-11-04',
-      DueDate: '2024-11-25',
+      DueDate: '2024-11-25'
     };
 
     Loan.findOneAndDelete.mockResolvedValue(mockLoan);
@@ -190,7 +194,7 @@ describe('DELETE /loans/:loanId', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       message: 'Loan deleted successfully',
-      loan: mockLoan,
+      loan: mockLoan
     });
   });
 
