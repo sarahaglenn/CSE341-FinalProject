@@ -9,5 +9,6 @@ router.use('/books', require('./books'));
 router.use('/reservations', require('./reservations'));
 router.use('/loans', require('./loans'));
 router.use('/api-docs', require('./swagger'));
+router.use('/auth', require('./auth'));
 
 module.exports = router;
