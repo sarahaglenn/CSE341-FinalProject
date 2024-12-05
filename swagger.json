@@ -14,7 +14,13 @@
     }
   ],
   "components": {
-    "securitySchemes": {},
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "User": {
         "type": "object",
@@ -77,6 +83,11 @@
       "get": {
         "summary": "Retrieve all users",
         "description": "Retrieve a list of all users.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK - All users returned",
@@ -93,6 +104,11 @@
       },
       "post": {
         "description": "Create a new user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "User data for creation",
           "required": true,
@@ -121,6 +137,11 @@
       "get": {
         "summary": "Retrieve a user with UserID",
         "description": "Retrieve one user by their id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -154,6 +175,11 @@
       "put": {
         "summary": "Update an existing user",
         "description": "Update the details of the user by UserID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -201,6 +227,11 @@
       "delete": {
         "summary": "Delete an existing user",
         "description": "Deletes the user identified by their UserID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userId",
@@ -232,6 +263,11 @@
       "get": {
         "summary": "Retrieve all users by type",
         "description": "Retrieve all users of the specified user type. Either: patron or staff",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "userType",
@@ -258,77 +294,6 @@
           },
           "404": {
             "description": "Not Found - No users exist with that user type."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/users/login": {
-      "get": {
-        "summary": "User login",
-        "description": "Authenticates a user based on query parameters and returns a session token.",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "user@example.com"
-            }
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "password",
-              "example": "password123"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    },
-                    "user": {
-                      "$ref": "#/components/schemas/User"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - Invalid email or password"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/users/logout": {
-      "get": {
-        "summary": "User logout",
-        "description": "Logs out the user by invalidating the current session or token.",
-        "responses": {
-          "200": {
-            "description": "Logout successful"
-          },
-          "401": {
-            "description": "Unauthorized - User not logged in"
           },
           "500": {
             "description": "Internal Server Error"
@@ -382,6 +347,11 @@
       },
       "post": {
         "description": "Create a New Book",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Book data for creation",
           "required": true,
@@ -443,6 +413,11 @@
       "put": {
         "summary": "Update an existing book",
         "description": "Update the details of a book identified by its BookID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "bookId",
@@ -490,6 +465,11 @@
       "delete": {
         "summary": "Delete an existing book.",
         "description": "Deletes the book identified by their BookID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "bookId",
@@ -521,6 +501,11 @@
       "get": {
         "summary": "Retrieve all reservations with optional filtering",
         "description": "Retrieve all current reservations or filter by UserID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "UserID",
@@ -554,6 +539,11 @@
       },
       "post": {
         "description": "Create a new Reservation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Reservation data for creation",
           "required": true,
@@ -583,6 +573,11 @@
       "get": {
         "summary": "Retrieve one reservation with ReservationID",
         "description": "Retrieve one reservation by its reservation id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "reservationId",
@@ -617,6 +612,11 @@
       "put": {
         "summary": "Update an existing reservation",
         "description": "Update the details of a reservation identified by its ReservationID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "reservationId",
@@ -664,6 +664,11 @@
       "delete": {
         "summary": "Delete an existing Reservation.",
         "description": "Deletes the Reservation identified by their ReservationID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "reservationId",
@@ -695,6 +700,11 @@
       "get": {
         "summary": "Retrieve all loans with optional filtering",
         "description": "Retrieve all current loans or filter by either UserID or BookID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "UserID",
@@ -737,6 +747,11 @@
       },
       "post": {
         "description": "Create a new Loan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "description": "Loan data for creation",
           "required": true,
@@ -765,6 +780,11 @@
       "get": {
         "summary": "Retrieve one loan with LoanID",
         "description": "Retrieve one loan by its loan id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "loanId",
@@ -799,6 +819,11 @@
       "put": {
         "summary": "Update an existing loan.",
         "description": "Modify the details of a loan identified by its LoanID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "loanId",
@@ -846,6 +871,11 @@
       "delete": {
         "summary": "Delete an existing loan.",
         "description": "Deletes the loan identified by their LoanID.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "loanId",
@@ -869,6 +899,53 @@
           },
           "500": {
             "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "summary": "User login",
+        "description": "Authenticates a user using google and returns a session token.",
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid email or password"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "summary": "User logout",
+        "description": "Logs out the user by invalidating the current session or token.",
+        "responses": {
+          "200": {
+            "description": "Logout successful"
+          },
+          "401": {
+            "description": "Unauthorized - User not logged in"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
