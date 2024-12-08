@@ -23,6 +23,7 @@
   "homepage": "https://github.com/sarahaglenn/CSE341-FinalProject#readme",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",

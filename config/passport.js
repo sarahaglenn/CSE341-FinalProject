@@ -19,7 +19,7 @@ passport.use(
     async (token, tokenSecret, profile, done) => {
       try {
         const { authToken } = await login(profile);
-        return done(null, { authToken });
+        return done(null, authToken);
       } catch (err) {
         console.error('Error during authentication:', err.message);
         return done(err, null);

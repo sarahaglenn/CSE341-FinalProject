@@ -16,6 +16,7 @@ const login = async (profile) => {
 };
 
 const logout = (req, res) => {
+  res.clearCookie('authToken');
   res.json({
     success: true,
     message: 'Logged out successfully.'

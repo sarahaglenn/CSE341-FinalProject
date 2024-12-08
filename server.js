@@ -4,12 +4,15 @@ const connectToDb = require('./db/connect');
 const connectToMongoose = require('./db/mongooseConnect');
 // const passport = require('passport');
 require('./config/passport');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 // Middleware
 // app.use(bodyParser.json());
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Root route to test the server
 app.get('/', (req, res) => {
