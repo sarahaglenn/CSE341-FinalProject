@@ -4,13 +4,15 @@ const connectToDb = require('./db/connect');
 const connectToMongoose = require('./db/mongooseConnect');
 // const passport = require('passport');
 require('./config/passport');
-
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 // Middleware
 // app.use(bodyParser.json());
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Root route to test the server
 app.get('/', (req, res) => {
@@ -40,20 +42,24 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
 app.use('/', require('./routes'));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  initOAuth: {
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    appName: 'Book Worm API',
-    scopes: ['profile']
-  },
-  requestInterceptor: (req) => {
-    const token = req.query.token ;
-    if (token) {
-      req.headers['Authorization'] = `Bearer ${token}`;
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    initOAuth: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      appName: 'Book Worm API',
+      scopes: ['profile']
+    },
+    requestInterceptor: (req) => {
+      const token = req.query.token;
+      if (token) {
+        req.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return req;
     }
-    return req;
-  }
-}));
+  })
+);
 
 module.exports = app;
