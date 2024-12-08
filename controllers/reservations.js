@@ -1,9 +1,7 @@
 const Reservation = require('../models/reservation-model');
-// const { ObjectId } = require('mongodb'); // not currently using this.
 
 const getReservations = async (req, res) => {
   const { UserID } = req.query;
-
   const filter = {};
   if (UserID) {
     const userIdNumber = parseInt(UserID, 10);
@@ -12,6 +10,7 @@ const getReservations = async (req, res) => {
     }
     filter.UserID = userIdNumber;
   }
+
   try {
     const reservations = await Reservation.find(filter);
     if (reservations.length > 0) {
@@ -25,17 +24,17 @@ const getReservations = async (req, res) => {
 };
 
 const getReservationById = async (req, res) => {
-  const reservationId = parseInt(req.params.reservationId);
+  const reservationId = parseInt(req.params.reservationId, 10);
   if (isNaN(reservationId)) {
     return res.status(400).json({ error: 'Invalid ReservationID. Must be a number.' });
   }
+
   try {
     const reservation = await Reservation.findOne({ ReservationID: reservationId });
     if (reservation) {
-      res.setHeader('Content-Type', 'application/json');
       res.status(200).json(reservation);
     } else {
-      res.status(404).json({ error: 'No reservations exists with that id' });
+      res.status(404).json({ error: 'No reservation exists with that id.' });
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
@@ -43,42 +42,31 @@ const getReservationById = async (req, res) => {
 };
 
 const createReservation = async (req, res) => {
-  const reservation = {
-    ReservationID: req.body.ReservationID,
-    BookID: req.body.BookID,
-    ReservationDate: req.body.ReservationDate,
-    UserID: req.body.UserID
-  };
+  const { ReservationID, BookID, ReservationDate, UserID } = req.body;
+
+  if (!ReservationID || !BookID || !ReservationDate || !UserID) {
+    return res.status(400).json({ error: 'All fields (ReservationID, BookID, ReservationDate, UserID) are required.' });
+  }
+
   try {
-    const result = await Reservation.create(reservation);
-    res.status(200).json(result);
+    const newReservation = { ReservationID, BookID, ReservationDate, UserID };
+    const reservation = await Reservation.create(newReservation);
+    res.status(201).json(reservation);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Some error occurred while adding the reservation' });
-    }
+    res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
 const updateReservation = async (req, res) => {
   const reservationId = parseInt(req.params.reservationId, 10);
-
-  // Validate reservationId
   if (isNaN(reservationId)) {
-    return res.status(400).json({ error: 'Invalid reservationId. Must be a number.' });
+    return res.status(400).json({ error: 'Invalid ReservationID. Must be a number.' });
   }
-
-  const updateData = {
-    UserID: req.body.UserID,
-    BookID: req.body.BookID,
-    ReservationDate: req.body.ReservationDate
-  };
 
   try {
     const updatedReservation = await Reservation.findOneAndUpdate(
       { ReservationID: reservationId },
-      updateData,
+      req.body,
       { new: true, runValidators: true }
     );
 
@@ -86,36 +74,26 @@ const updateReservation = async (req, res) => {
       return res.status(404).json({ error: 'Reservation not found' });
     }
 
-    res.status(200).json({
-      message: 'Reservation updated successfully',
-      reservation: updatedReservation
-    });
+    res.status(200).json(updatedReservation);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
 };
 
-// Delete reservation
 const deleteReservation = async (req, res) => {
   const reservationId = parseInt(req.params.reservationId, 10);
-
-  // Validate reservationId
   if (isNaN(reservationId)) {
-    return res.status(400).json({ error: 'Invalid reservationId. Must be a number.' });
+    return res.status(400).json({ error: 'Invalid ReservationID. Must be a number.' });
   }
 
   try {
-    // Find and delete the reservation by ReservationID
     const deletedReservation = await Reservation.findOneAndDelete({ ReservationID: reservationId });
 
     if (!deletedReservation) {
       return res.status(404).json({ error: 'Reservation not found' });
     }
 
-    res.status(200).json({
-      message: 'Reservation deleted successfully',
-      reservation: deletedReservation
-    });
+    res.status(200).json({ message: 'Reservation deleted successfully', reservation: deletedReservation });
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error', detail: error.message });
   }
@@ -126,5 +104,5 @@ module.exports = {
   getReservationById,
   createReservation,
   updateReservation,
-  deleteReservation
+  deleteReservation,
 };
