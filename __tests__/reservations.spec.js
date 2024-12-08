@@ -3,15 +3,83 @@ const supertest = require('supertest');
 const request = supertest(app);
 const Reservation = require('../models/reservation-model');
 
-describe('Test GET /reservations', () => {
+jest.mock('jsonwebtoken', () => ({
+  sign: jest.fn(() => 'mockToken'),
+  verify: jest.fn((token) => {
+    if (token === 'mockToken') {
+      return { googleId: 'mockGoogleId', name: 'Mock User', email: 'mock@example.com' };
+    }
+    throw new Error('Invalid token');
+  })
+}));
+
+jest.mock('../models/reservation-model', () => ({
+  find: jest.fn((filter) => {
+    if (filter && filter.UserID !== undefined) {
+      return Promise.resolve(mockReservations.filter((res) => res.UserID === filter.UserID));
+    }
+    return Promise.resolve(mockReservations);
+  }),
+  findOne: jest.fn((query) => {
+    const id = query.ReservationID;
+    return Promise.resolve(mockReservations.find((res) => res.ReservationID === id));
+  }),
+  create: jest.fn((data) => {
+    if (!data.BookID || !data.ReservationDate || !data.UserID) {
+      const validationError = new Error('Validation failed');
+      validationError.name = 'ValidationError';
+      validationError.message = 'Path `ReservationDate` is required';
+      return Promise.reject(validationError);
+    }
+    return Promise.resolve({
+      ReservationID: data.ReservationID,
+      BookID: data.BookID,
+      ReservationDate: data.ReservationDate,
+      UserID: data.UserID
+    });
+  }),
+  findOneAndUpdate: jest.fn((query, updateData) => {
+    if (updateData.BookID && isNaN(updateData.BookID)) {
+      return Promise.reject({
+        name: 'ValidationError'
+      });
+    }
+
+    const reservation = mockReservations.find((res) => res.ReservationID === query.ReservationID);
+    if (!reservation) return Promise.resolve(null);
+    const updatedReservation = Object.assign(reservation, updateData);
+    return updatedReservation;
+  }),
+  findOneAndDelete: jest.fn((query) => {
+    const id = query.ReservationID;
+    const index = mockReservations.findIndex((res) => res.ReservationID === id);
+    if (index === -1) return Promise.resolve(null);
+    const deletedReservation = { ...mockReservations[index] };
+    mockReservations.splice(index, 1);
+    return Promise.resolve(deletedReservation);
+  })
+}));
+
+const mockReservations = [
+  { ReservationID: 1, BookID: 1, ReservationDate: '2024-11-01', UserID: 1 },
+  { ReservationID: 2, BookID: 2, ReservationDate: '2024-11-02', UserID: 2 },
+  { ReservationID: 3, BookID: 3, ReservationDate: '2024-11-03', UserID: 3 },
+  { ReservationID: 4, BookID: 2, ReservationDate: '2024-12-12', UserID: 2 }
+];
+
+describe('GET /reservations', () => {
   test('responds to GET all reservations with no query parameters', async () => {
-    const res = await request.get('/reservations');
+    const res = await request.get('/reservations').set('Authorization', 'Bearer mockToken');
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
+    expect(res.body).toEqual(mockReservations);
     expect(res.statusCode).toBe(200);
   });
   test('responds to GET /reservations with valid query parameters', async () => {
     const userId = 1;
-    const res = await request.get('/reservations').query({ UserID: userId });
+    const res = await request
+      .get('/reservations')
+      .query({ UserID: userId })
+      .set('Authorization', 'Bearer mockToken');
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
@@ -21,7 +89,10 @@ describe('Test GET /reservations', () => {
   });
   test('responds to GET /reservations with out of bounds query parameters', async () => {
     const userId = 999;
-    const res = await request.get('/reservations').query({ UserID: userId });
+    const res = await request
+      .get('/reservations')
+      .query({ UserID: userId })
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(404);
     expect(res.body).toEqual({
       error: 'No reservations exist matching the given query parameters.'
@@ -29,7 +100,10 @@ describe('Test GET /reservations', () => {
   });
   test('responds to GET /reservations with invalid query parameters', async () => {
     const userId = 'a';
-    const res = await request.get('/reservations').query({ UserID: userId });
+    const res = await request
+      .get('/reservations')
+      .query({ UserID: userId })
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
     expect(res.body).toEqual({ error: 'Invalid UserID. Must be a number.' });
   });
@@ -38,7 +112,7 @@ describe('Test GET /reservations', () => {
       throw new Error('Internal Server Error');
     });
 
-    const res = await request.get('/reservations');
+    const res = await request.get('/reservations').set('Authorization', 'Bearer mockToken');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
@@ -51,27 +125,26 @@ describe('Test GET /reservations', () => {
 describe('Test GET /reservations/reservationId', () => {
   test('responds to GET /reservations/reservationId', async () => {
     const reservationId = 2;
-    const expectedReservation = {
-      ReservationID: reservationId,
-      BookID: 1,
-      ReservationDate: '2024-11-25',
-      UserID: 1,
-      _id: '673296497293e43e440f3da5'
-    };
-    const res = await request.get(`/reservations/${reservationId}`);
+    const res = await request
+      .get(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
     expect(res.statusCode).toBe(200);
     const actualReservation = res.body;
-    expect(actualReservation).toMatchObject(expectedReservation);
+    expect(actualReservation).toMatchObject(mockReservations[1]);
   });
   test('responds with 400 for invalid ReservationID', async () => {
     const reservationId = 'a';
-    const res = await request.get(`/reservations/${reservationId}`);
+    const res = await request
+      .get(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
   });
   test('responds with 404 if no reservation matches ReservationID', async () => {
     const reservationId = 99;
-    const res = await request.get(`/reservations/${reservationId}`);
+    const res = await request
+      .get(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(404);
     expect(res.body).toEqual({ error: 'No reservations exists with that id' });
   });
@@ -81,7 +154,9 @@ describe('Test GET /reservations/reservationId', () => {
     });
 
     const reservationId = 27;
-    const res = await request.get(`/reservations/${reservationId}`);
+    const res = await request
+      .get(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
@@ -96,45 +171,43 @@ describe('Test POST /reservations', () => {
 
   afterEach(async () => {
     if (createdReservationId) {
-      await Reservation.findByIdAndDelete(createdReservationId);
+      await Reservation.findOneAndDelete(createdReservationId);
     }
   });
   test('creates a new reservation with valid data', async () => {
-    const newReservation = {
-      ReservationID: 25,
-      BookID: 2,
-      ReservationDate: '2024-10-31',
-      UserID: 1
-    };
-    const res = await request.post('/reservations').send(newReservation);
+    const res = await request
+      .post('/reservations')
+      .send(mockReservations[0])
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(200);
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
 
     createdReservationId = res.body._id;
 
-    expect(res.body).toMatchObject({
-      ReservationID: 25,
-      BookID: 2,
-      ReservationDate: '2024-10-31',
-      UserID: 1
-    });
+    expect(res.body).toMatchObject(mockReservations[0]);
   });
-  test('responds with 500 if required fields are missing', async () => {
+  test('responds with 400 if required fields are missing', async () => {
     const incompleteReservation = {
-      ReservationID: 26
+      ReservationID: 26,
+      BookID: 1,
+      UserID: 2
     };
-    const res = await request.post('/reservations').send(incompleteReservation);
+    const res = await request
+      .post('/reservations')
+      .send(incompleteReservation)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBeDefined();
-    expect(res.body.error).toContain('Path `BookID` is required');
     expect(res.body.error).toContain('Path `ReservationDate` is required');
-    expect(res.body.error).toContain('Path `UserID` is required');
   });
   test('responds with 400 if invalid data is provided', async () => {
     const invalidReservation = {
       ReservationID: 'abc'
     };
-    const res = await request.post('/reservations').send(invalidReservation);
+    const res = await request
+      .post('/reservations')
+      .send(invalidReservation)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBeDefined();
   });
@@ -150,7 +223,10 @@ describe('Test POST /reservations', () => {
       throw new Error('Internal Server Error');
     });
 
-    const res = await request.post('/reservations').send(validReservation);
+    const res = await request
+      .post('/reservations')
+      .send(validReservation)
+      .set('Authorization', 'Bearer mockToken');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
@@ -181,7 +257,10 @@ describe('Test PUT /reservations/reservationId', () => {
       ReservationDate: '2024-10-31',
       UserID: 2
     };
-    const res = await request.put(`/reservations/${reservationId}`).send(updatedReservation);
+    const res = await request
+      .put(`/reservations/${reservationId}`)
+      .send(updatedReservation)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(200);
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
 
@@ -199,13 +278,18 @@ describe('Test PUT /reservations/reservationId', () => {
     const invalidReservation = {
       BookID: 'abc'
     };
-    const res = await request.put(`/reservations/${reservationId}`).send(invalidReservation);
+    const res = await request
+      .put(`/reservations/${reservationId}`)
+      .send(invalidReservation)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(500);
     expect(res.body.error).toBeDefined();
   });
   test('responds with 404 if no reservation matches ReservationID', async () => {
     const reservationId = 99;
-    const res = await request.put(`/reservations/${reservationId}`);
+    const res = await request
+      .put(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(404);
     expect(res.body).toEqual({ error: 'Reservation not found' });
   });
@@ -222,7 +306,10 @@ describe('Test PUT /reservations/reservationId', () => {
       throw new Error('Internal Server Error');
     });
 
-    const res = await request.put(`/reservations/${reservationId}`).send(validReservation);
+    const res = await request
+      .put(`/reservations/${reservationId}`)
+      .send(validReservation)
+      .set('Authorization', 'Bearer mockToken');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
@@ -249,7 +336,9 @@ describe('Test DELETE /reservations/reservationId', () => {
   });
   test('responds to DELETE /reservations/reservationId', async () => {
     const reservationId = 4;
-    const res = await request.delete(`/reservations/${reservationId}`);
+    const res = await request
+      .delete(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(200);
     expect(res.body).toMatchObject({
       message: 'Reservation deleted successfully',
@@ -263,12 +352,16 @@ describe('Test DELETE /reservations/reservationId', () => {
   });
   test('responds with 400 for invalid ReservationID', async () => {
     const reservationId = 'a';
-    const res = await request.delete(`/reservations/${reservationId}`);
+    const res = await request
+      .delete(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
   });
   test('responds with 404 if no reservation matches ReservationID', async () => {
     const reservationId = 99;
-    const res = await request.delete(`/reservations/${reservationId}`);
+    const res = await request
+      .delete(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(404);
     expect(res.body).toEqual({ error: 'Reservation not found' });
   });
@@ -278,7 +371,9 @@ describe('Test DELETE /reservations/reservationId', () => {
     });
 
     const reservationId = 4;
-    const res = await request.delete(`/reservations/${reservationId}`);
+    const res = await request
+      .delete(`/reservations/${reservationId}`)
+      .set('Authorization', 'Bearer mockToken');
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({

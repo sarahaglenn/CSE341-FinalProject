@@ -9,17 +9,21 @@ const callbackURL =
     ? process.env.CALLBACK_URL_PROD
     : process.env.CALLBACK_URL_DEV;
 
-
-passport.use(new GoogleStrategy({
-    callbackURL,
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-}, async (token, tokenSecret, profile, done) => {
-    try {
+passport.use(
+  new GoogleStrategy(
+    {
+      callbackURL,
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    },
+    async (token, tokenSecret, profile, done) => {
+      try {
         const { authToken } = await login(profile);
         return done(null, { authToken });
-    } catch (err) {
+      } catch (err) {
         console.error('Error during authentication:', err.message);
         return done(err, null);
+      }
     }
-}));
+  )
+);
