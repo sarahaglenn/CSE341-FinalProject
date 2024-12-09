@@ -28,7 +28,7 @@ jest.mock('../models/reservation-model', () => ({
     if (!data.BookID || !data.ReservationDate || !data.UserID) {
       const validationError = new Error('Validation failed');
       validationError.name = 'ValidationError';
-      validationError.message = 'Path `ReservationDate` is required';
+      validationError.message = 'All fields (ReservationID, BookID, ReservationDate, UserID) are required.';
       return Promise.reject(validationError);
     }
     return Promise.resolve({
@@ -146,7 +146,7 @@ describe('Test GET /reservations/reservationId', () => {
       .get(`/reservations/${reservationId}`)
       .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(404);
-    expect(res.body).toEqual({ error: 'No reservations exists with that id' });
+    expect(res.body).toEqual({ error: 'No reservation exists with that id.' });
   });
   test('handles server errors', async () => {
     jest.spyOn(Reservation, 'findOne').mockImplementationOnce(() => {
@@ -179,7 +179,7 @@ describe('Test POST /reservations', () => {
       .post('/reservations')
       .send(mockReservations[0])
       .set('Authorization', 'Bearer mockToken');
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(201);
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
 
     createdReservationId = res.body._id;
@@ -198,7 +198,7 @@ describe('Test POST /reservations', () => {
       .set('Authorization', 'Bearer mockToken');
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBeDefined();
-    expect(res.body.error).toContain('Path `ReservationDate` is required');
+    expect(res.body.error).toContain('All fields (ReservationID, BookID, ReservationDate, UserID) are required.');
   });
   test('responds with 400 if invalid data is provided', async () => {
     const invalidReservation = {
@@ -230,7 +230,8 @@ describe('Test POST /reservations', () => {
 
     expect(res.statusCode).toBe(500);
     expect(res.body).toEqual({
-      error: 'Some error occurred while adding the reservation'
+      detail: 'Internal Server Error',
+      error: 'Internal Server Error'
     });
   });
 });
@@ -264,13 +265,12 @@ describe('Test PUT /reservations/reservationId', () => {
     expect(res.statusCode).toBe(200);
     expect(res.header['content-type']).toBe('application/json; charset=utf-8');
 
+    console.log(res.body);
     expect(res.body).toMatchObject({
-      message: 'Reservation updated successfully',
-      reservation: {
-        BookID: 2,
-        ReservationDate: '2024-10-31',
-        UserID: 2
-      }
+      ReservationID: 3,
+      BookID: 2,
+      ReservationDate: '2024-10-31',
+      UserID: 2
     });
   });
   test('responds with 500 if invalid data is provided', async () => {
@@ -382,3 +382,4 @@ describe('Test DELETE /reservations/reservationId', () => {
     });
   });
 });
+
