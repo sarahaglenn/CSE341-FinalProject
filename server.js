@@ -30,9 +30,11 @@ const port = process.env.PORT || 3000;
     await connectToMongoose();
     console.log('Connected to database via Mongoose');
 
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
+
+  module.exports = server;
   } catch (err) {
     console.error('Failed to start server:', err);
   }
